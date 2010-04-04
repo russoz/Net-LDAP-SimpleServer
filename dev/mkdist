@@ -1,0 +1,69 @@
+#!/bin/bash
+
+dry_run=1
+[ "$1" = "-f" ] && dry_run=0
+
+is_dry_run() {
+  [[ "$dry_run" -eq 1 ]]
+}
+
+msg() {
+  echo "$@" >&2
+}
+
+msg "== Running through perltidy"
+perltidy -b lib/Net/LDAP/SimpleServer.pm
+
+msg "== Adding module to git"
+is_dry_run || git add lib/Net/LDAP/SimpleServer.pm
+
+msg "== Making README"
+( readme=../README
+  is_dry_run && readme=/dev/null 
+  cd lib; perldoc -t -F Net/LDAP/SimpleServer.pm > $readme ) \
+  || exit 1
+is_dry_run || git add README
+
+msg "== Running ./Build.PL"
+perl ./Build.PL || exit 1
+
+msg "== Creating META.yml"
+./Build distmeta || exit 1
+
+version=$(perl -nle 'if( /^version/ ) { s/^\S+\s+v//; print; }' META.yml)
+msg "== Version: $version"
+
+msg "== Generating <Changes> automagically"
+grep -q "^$version" Changes && {
+  msg "**** VERSION $version is already in Changes. Aborting..."
+  exit 1
+}
+changes=Changes
+is_dry_run && changes=/dev/tty
+cp Changes __changes && {
+    echo "Revision history for Net-LDAP-SimpleServer.pm"
+    echo ""
+    printf '%-7s %s\n' "$version" "$(date +%d.%m.%Y) DIST VERSION $version"
+    git log --oneline | perl -nle 'exit if /DIST VERSION/; print "$_";' &&
+    echo "" &&
+    cat __changes | perl -e '$a=<>; $a=<>; while(<>) { print }'
+} > $changes \
+  || exit 1
+is_dry_run || {
+  head -20 Changes
+  git add Changes
+}
+
+msg "== Committing files to git"
+is_dry_run || { git commit -m "DIST VERSION $version" || exit 1; }
+
+msg "== Making distribution package"
+./Build dist || exit 1
+
+d=$(echo Net-LDAP-SimpleServer*.tar.gz) 
+msg "== Moving file $d to home directory"
+is_dry_run || mv $d ${HOME}
+
+msg "== Cleaning directory"
+is_dry_run || git clean -fd
+
