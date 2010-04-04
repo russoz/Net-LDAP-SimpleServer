@@ -13,6 +13,12 @@ use version; $VERSION = qv('0.0.3');
 #  use Perl6::Say;
 
 # Module implementation here
+sub new {
+     my ( $class, $config ) = @_;
+
+    return unless UNIVERSAL::isa( $config, 'HASH' );
+    return bless { _cfg => $config }, $class;   
+}
 
 1;    # Magic true value required at end of module
 __END__
