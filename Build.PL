@@ -8,8 +8,10 @@ my $builder = Module::Build->new(
     dist_author         => 'Alexei Znamensky <russoz@cpan.org>',
     dist_version_from   => 'lib/Net/LDAP/SimpleServer.pm',
     requires => {
-        'Test::More' => 0,
-        'version'    => 0,
+        'Config::General' => 0,
+        'File::HomeDir'   => 0,
+        'Test::More'      => 0,
+        'version'         => 0,
     },
     add_to_cleanup      => [ 'Net-LDAP-SimpleServer-*' ],
 );

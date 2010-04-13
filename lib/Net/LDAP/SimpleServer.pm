@@ -4,20 +4,45 @@ use warnings;
 use strict;
 use Carp;
 
-use version; $VERSION = qv('0.0.3');
+use version; our $VERSION = qv('0.0.3');
 
-# Other recommended modules (uncomment to use):
-#  use IO::Prompt;
-#  use Perl6::Export;
-#  use Perl6::Slurp;
-#  use Perl6::Say;
+use File::HomeDir;
+use File::Spec::Functions qw(catfile);
+use Config::General qw(ParseConfig);
 
-# Module implementation here
+use constant DEFAULT_CONFIG_FILE => '.netldapsimpleserver.conf';
+
 sub new {
-     my ( $class, $config ) = @_;
+    my ( $class, $param ) = @_;
 
-    return unless UNIVERSAL::isa( $config, 'HASH' );
-    return bless { _cfg => $config }, $class;   
+    my $config;
+    if( UNIVERSAL::isa( $param, 'HASH' ) ) {
+        # $param is a hash with configuration
+        $config = $param;
+    }
+    else {
+        # or a configuration file
+        my $cfgfile = $param || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
+
+        $config = _read_config_file( $cfgfile );
+    }
+    return bless ( { cfg => $config }, $class );    
+}
+
+sub _read_config_file {
+    my $file = shift;
+
+    croak q{Can't read the configuration file "} . $file . q{".} unless -r $file;
+    my %config = ParseConfig(
+        -ConfigFile           => $file,
+        -AllowMultiOptions    => 'no',
+        -UseApacheInclude     => 1,
+        -MergeDuplicateBlocks => 1,
+        -AutoTrue             => 1,
+        -CComments            => 0,
+    );
+
+    return \%config;
 }
 
 1;    # Magic true value required at end of module
@@ -25,24 +50,34 @@ __END__
 
 =head1 NAME
 
-Net::LDAP::SimpleServer - [One line description of module's purpose here]
-
+Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
 =head1 VERSION
 
-This document describes Net::LDAP::SimpleServer version 0.0.1
-
+This document describes Net::LDAP::SimpleServer version 0.0.3
 
 =head1 SYNOPSIS
 
     use Net::LDAP::SimpleServer;
 
-=for author to fill in:
-    Brief code example(s) here showing commonest usage(s).
-    This section will be as far as many users bother reading
-    so make it as educational and exeplary as possible.
-  
-  
+    my $server = Net::LDAP::SimpleServer->new();
+    my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
+    $server->run();
+
+Using, respectively, the default configuration file, which is
+
+    {HOME}/.netldapsimpleserver.conf
+
+Or using a specified file as the configuration file.
+Alternatively, all the configuration can be passed as a hash reference:
+
+    my $server = Net::LDAP::SimpleServer->new({
+        port => 5000,
+        data => '/path/to/data.ldif',
+    });
+    $server->run();
+
+
 =head1 DESCRIPTION
 
 =for author to fill in:
@@ -51,6 +86,10 @@ This document describes Net::LDAP::SimpleServer version 0.0.1
 
 
 =head1 INTERFACE 
+
+=head2 new()
+
+
 
 =for author to fill in:
     Write a separate section listing the public components of the modules
@@ -170,3 +209,4 @@ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
 FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
+
