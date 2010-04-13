@@ -16,23 +16,27 @@ sub new {
     my ( $class, $param ) = @_;
 
     my $config;
-    if( UNIVERSAL::isa( $param, 'HASH' ) ) {
+    if ( UNIVERSAL::isa( $param, 'HASH' ) ) {
+
         # $param is a hash with configuration
         $config = $param;
     }
     else {
-        # or a configuration file
-        my $cfgfile = $param || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
 
-        $config = _read_config_file( $cfgfile );
+        # or a configuration file
+        my $cfgfile = $param
+          || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
+
+        $config = _read_config_file($cfgfile);
     }
-    return bless ( { cfg => $config }, $class );    
+    return bless( { cfg => $config }, $class );
 }
 
 sub _read_config_file {
     my $file = shift;
 
-    croak q{Can't read the configuration file "} . $file . q{".} unless -r $file;
+    croak q{Can't read the configuration file "} . $file . q{".}
+      unless -r $file;
     my %config = ParseConfig(
         -ConfigFile           => $file,
         -AllowMultiOptions    => 'no',
