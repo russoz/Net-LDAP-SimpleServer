@@ -1,5 +1,7 @@
 #!/bin/bash
 
+modulepath=Net/LDAP/SimpleServer.pm
+
 dry_run=1
 [ "$1" = "-f" ] && dry_run=0
 
@@ -12,15 +14,15 @@ msg() {
 }
 
 msg "== Running through perltidy"
-perltidy -b lib/Net/LDAP/SimpleServer.pm
+perltidy -b lib/${modulepath}
 
 msg "== Adding module to git"
-is_dry_run || git add lib/Net/LDAP/SimpleServer.pm
+is_dry_run || git add lib/${modulepath}
 
 msg "== Making README"
 ( readme=../README
   is_dry_run && readme=/dev/null 
-  cd lib; perldoc -t -F Net/LDAP/SimpleServer.pm > $readme ) \
+  cd lib; perldoc -t -F ${modulepath} > $readme ) \
   || exit 1
 is_dry_run || git add README
 
@@ -41,7 +43,7 @@ grep -q "^$version" Changes && {
 changes=Changes
 is_dry_run && changes=/dev/tty
 cp Changes __changes && {
-    echo "Revision history for Net-LDAP-SimpleServer.pm"
+    echo "Revision history for $(echo ${modulepath} | sed -e 's/\//\-/g' )"
     echo ""
     printf '%-7s %s\n' "$version" "$(date +%d.%m.%Y) DIST VERSION $version"
     git log --oneline | perl -nle 'exit if /DIST VERSION/; print "$_";' &&
