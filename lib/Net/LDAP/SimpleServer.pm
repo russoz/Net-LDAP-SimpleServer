@@ -45,7 +45,6 @@ sub _read_config_file {
         -AutoTrue             => 1,
         -CComments            => 0,
     );
-
     return \%config;
 }
 

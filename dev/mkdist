@@ -14,7 +14,7 @@ msg() {
 }
 
 msg "== Running through perltidy"
-perltidy -b lib/${modulepath}
+perltidy -b lib/${modulepath} t/*.t
 
 msg "== Adding module to git"
 is_dry_run || git add lib/${modulepath}
