@@ -1,6 +1,8 @@
 #!/bin/bash
 
-modulepath=Net/LDAP/SimpleServer.pm
+modulename='Net::LDAP::SimpleServer'
+modulepath=$(echo $modulename | sed -e 's/::/\//g').pm
+moduledash=$(echo $modulepath | sed -e 's/::/-/g')
 
 dry_run=1
 [ "$1" = "-f" ] && dry_run=0
@@ -13,8 +15,17 @@ msg() {
   echo "$@" >&2
 }
 
+msg "== Checking current directory"
+[ -f ./lib/${modulepath} ] || {
+    msg "**** Cannot find ./lib/${modulepath}"
+    exit 1
+}
+
 msg "== Running through perltidy"
-perltidy -b lib/${modulepath} t/*.t
+perltidy -b lib/${modulepath} t/*.t || {
+    msg "**** Failed syntax check! Aborting."
+    exit 1
+}
 
 msg "== Adding module to git"
 is_dry_run || git add lib/${modulepath}
@@ -43,9 +54,10 @@ grep -q "^$version" Changes && {
 changes=Changes
 is_dry_run && changes=/dev/tty
 cp Changes __changes && {
-    echo "Revision history for $(echo ${modulepath} | sed -e 's/\//\-/g' )"
+    echo "Revision history for ${moduledash}"
     echo ""
-    printf '%-7s %s\n' "$version" "$(date +%d.%m.%Y) DIST VERSION $version"
+    printf '%-7s %s\n' "$version" "$(date +%d.%m.%Y)" \
+        "${modulename}: DIST VERSION $version"
     git log --oneline | perl -nle 'exit if /DIST VERSION/; print "$_";' &&
     echo "" &&
     cat __changes | perl -e '$a=<>; $a=<>; while(<>) { print }'
@@ -62,7 +74,7 @@ is_dry_run || { git commit -m "DIST VERSION $version" || exit 1; }
 msg "== Making distribution package"
 ./Build dist || exit 1
 
-d=$(echo Net-LDAP-SimpleServer*.tar.gz) 
+d=$(echo ${moduledash}*.tar.gz) 
 msg "== Moving file $d to home directory"
 is_dry_run || mv $d ${HOME}
 

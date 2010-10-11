@@ -4,7 +4,10 @@ MANIFEST
 Makefile.PL
 README
 lib/Net/LDAP/SimpleServer.pm
+lib/Net/LDAP/SimpleServer/LDIFStore.pm
 t/00.load.t
+t/01.load.store.t
+t/02.store.t
 t/perlcritic.t
 t/pod-coverage.t
 t/pod.t

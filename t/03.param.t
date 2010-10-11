@@ -1,9 +1,11 @@
-use Test::More tests => 2;
+use Test::More tests => 0;
+
+__DATA__
 
 use Net::LDAP::SimpleServer;
 
 sub _check_param {
-    eval { Net::Squid::Auth::Plugin::SimpleLDAP->new(@_) };
+    eval { Net::LDAP::SimpleServer->new(@_) };
 }
 
 sub check_param_success {

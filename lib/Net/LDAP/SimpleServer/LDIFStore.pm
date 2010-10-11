@@ -1,67 +1,119 @@
-package Net::LDAP::SimpleServer;
+package Net::LDAP::SimpleServer::LDIFStore;
 
-use warnings;
 use strict;
+use warnings;
+use diagnostics;
+
 use Carp;
+use UNIVERSAL::isa;
+use Scalar::Util qw(blessed reftype openhandle);
+use Net::LDAP::LDIF;
 
 use version; our $VERSION = qv('0.0.3');
-
-use File::HomeDir;
-use File::Spec::Functions qw(catfile);
-use Scalar::Util qw(reftype);
-use Config::General qw(ParseConfig);
-use Net::LDAP::SimpleServer::LDIFStore;
-
-use constant DEFAULT_CONFIG_FILE => '.netldapsimpleserver.conf';
 
 sub new {
     my ( $class, $param ) = @_;
 
-    my $config;
-    if ( reftype($param) eq 'HASH' ) {
+    croak 'Must pass argument!' unless $param;
 
-        # $param is a hash with configuration
-        $config = $param;
+    my $list = [];
+    my $reftype = reftype ($param) || '';
+    if ( $reftype eq 'HASH' ) {
+
+        # LDIF file parameter
+        #   - a file name
+        #   - a file handle
+        #   - a Net::LDAP::LDIF object
+        if ( exists $param->{ldif} ) {
+            $list = _load_ldif( $param->{ldif}, $param->{ldif_options} );
+        }
+    }
+    elsif ( blessed($param) ) {
+
+        # an object!
+        if ( $param->isa('Net::LDAP::LDIF') ) {
+            $list = _load_ldif($param);
+        }
     }
     else {
-
-        # or a configuration file
-        my $cfgfile = $param
-          || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
-
-        $config = _read_config_file($cfgfile);
+        croak 'Invalid argument!';
     }
-    return bless( { config => $config, }, $class );
+
+    return bless( { list => $list }, $class );
 }
 
-sub _read_config_file {
-    my $file = shift;
+#
+# loads a filename, a file-handle, or a Net::LDAP::LDIF object
+#
+sub _load_ldif {
+    my ( $protoself, $ldifspec, $options ) = @_;
 
-    croak q{Cannot read the configuration file "} . $file . q{".}
-      unless -r $file;
-    my %config = ParseConfig(
-        -ConfigFile           => $file,
-        -AllowMultiOptions    => 'no',
-        -UseApacheInclude     => 1,
-        -MergeDuplicateBlocks => 1,
-        -AutoTrue             => 1,
-        -CComments            => 0,
-    );
+    my $ldif;
+    my @list = ();
+    if ( blessed($ldifspec) ) {
+        croak "Not an Net::LDAP::LDIF object!!"
+          unless $ldif->isa('Net::LDAP::LDIF');
+        $ldif = $ldifspec;
+    }
+    else {
+        if ($options) {
+            $ldif = Net::LDAP::LDIF->new( $ldifspec, 'r', %{$options} );
+        }
+        else {
+            $ldif = Net::LDAP::LDIF->new($ldifspec);
+        }
+    }
 
-    croak q{Must specify a data file in "} . $file . q{".}
-      unless exists $config{DataFile};
+    while ( not $ldif->eof() ) {
+        my $entry = $ldif->read_entry();
+        if ( $ldif->error() ) {
+            print STDERR "Error msg: ",    $ldif->error(),       "\n";
+            print STDERR "Error lines:\n", $ldif->error_lines(), "\n";
+            next;
+        }
 
-    return \%config;
+        push @list, $entry;
+    }
+    $ldif->done();
+
+    my @sortedlist = sort { uc( $a->dn() ) cmp uc( $b->dn() ) } @list;
+
+    return \@sortedlist;
 }
 
-sub _load_data {
-    my $self = shift;
+sub _add_ldap_entry {
+    my ( $self, $entry ) = @_;
 
-    return unless $self->{loaded};
+    my @newlist =
+      sort { uc( $a->dn() ) cmp uc( $b->dn() ) } ( @{ $self->{list} }, $entry );
 
-    $self->{store} =
-      Net::LDAP::SimpleServer::LDIFStore->new( $self->{config}->{DataFile} );
-    $self->{loaded} = 1;
+    $self->{list} = \@newlist;
+}
+
+sub add_node {
+    my ( $self, $param, %attrs ) = @_;
+
+    my $entry;
+    if ( blessed($param) ) {
+        carp 'Must pass a Net::LDAP::Entry object'
+          if !$param->isa('Net::LDAP::Entry');
+
+        $entry = $param;
+    }
+    else {
+        my $entry = Net::LDAP::Entry->( $param, %attrs );
+    }
+    $self->_add_ldap_entry($entry);
+}
+
+sub filter {
+    my ( $self, $sub ) = @_;
+    my @list = @{ $self->{list} };
+
+    foreach my $index ( 0 .. $#list ) {
+        delete $list[$index] unless $sub->( $list[$index] );
+    }
+    return @list;
 }
 
 1;    # Magic true value required at end of module
@@ -69,19 +121,17 @@ __END__
 
 =head1 NAME
 
-Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
+Net::LDAP::SimpleServer::LDIFStore - Data tree to support C<Net::LDAP::SimpleServer>
 
 =head1 VERSION
 
-This document describes Net::LDAP::SimpleServer version 0.0.3
+This document describes Net::LDAP::SimpleServer::LDIFStore version 0.0.3
 
 =head1 SYNOPSIS
 
-    use Net::LDAP::SimpleServer;
+    use Net::LDAP::SimpleServer::LDIFStore;
 
-    my $server = Net::LDAP::SimpleServer->new();
-    my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
-    $server->run();
+    my $tree = Net::LDAP::SimpleServer::LDIFStore->new();
 
 Using, respectively, the default configuration file, which is
 
