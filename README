@@ -1,45 +1,87 @@
-Net-LDAP-SimpleServer version 0.0.1
+NAME
+    Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
-[ REPLACE THIS...
+VERSION
+    This document describes Net::LDAP::SimpleServer version 0.0.3
 
-  The README is used to introduce the module and provide instructions on
-  how to install the module, any machine dependencies it may have (for
-  example C compilers and installed libraries) and any other information
-  that should be understood before the module is installed.
+SYNOPSIS
+        use Net::LDAP::SimpleServer;
 
-  A README file is required for CPAN modules since CPAN extracts the
-  README file from a module distribution so that people browsing the
-  archive can use it get an idea of the modules uses. It is usually a
-  good idea to provide version information here so that people can
-  decide whether fixes for the module are worth downloading.
-]
+        my $server = Net::LDAP::SimpleServer->new();
+        my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
+        $server->run();
 
+    Using, respectively, the default configuration file, which is
 
-INSTALLATION
+        {HOME}/.netldapsimpleserver.conf
 
-To install this module, run the following commands:
+    Or using a specified file as the configuration file. Alternatively, all
+    the configuration can be passed as a hash reference:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+        my $server = Net::LDAP::SimpleServer->new({
+            port => 5000,
+            data => '/path/to/data.ldif',
+        });
+        $server->run();
 
-Alternatively, to install with Module::Build, you can use the following commands:
+DESCRIPTION
+INTERFACE
+  new()
+DIAGNOSTICS
+    "Error message here, perhaps with %s placeholders"
+        [Description of error here]
 
-	perl Build.PL
-	./Build
-	./Build test
-	./Build install
+    "Another error message here"
+        [Description of error here]
 
+        [Et cetera, et cetera]
+
+CONFIGURATION AND ENVIRONMENT
+    Net::LDAP::SimpleServer requires no configuration files or environment
+    variables.
 
 DEPENDENCIES
+    None.
 
-None.
+INCOMPATIBILITIES
+    None reported.
 
+BUGS AND LIMITATIONS
+    No bugs have been reported.
 
-COPYRIGHT AND LICENCE
+    Please report any bugs or feature requests to
+    "bug-net-ldap-simpleserver@rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org>.
 
-Copyright (C) 2010, Alexei Znamensky
+AUTHOR
+    Alexei Znamensky "<russoz@cpan.org>"
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+LICENCE AND COPYRIGHT
+    Copyright (c) 2010, Alexei Znamensky "<russoz@cpan.org>". All rights
+    reserved.
+
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. See perlartistic.
+
+DISCLAIMER OF WARRANTY
+    BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+    FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+    OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+    PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+    EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+    ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+    YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+    NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+    IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+    WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+    REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE LIABLE
+    TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR
+    CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+    SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+    RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+    FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+    SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+    DAMAGES.
+

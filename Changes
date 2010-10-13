@@ -1,5 +1,17 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.3   12.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.3
+======= ======================================================================
+7359e48 mkdist eye-candy on the output
+f6dfd34 run through perltidy
+1370f6d Multiple changes
+4fadc8c More perltidy!
+da21aa4 Module has been tidied up
+3feaa31 Made it more generic towards module name
+0ef415d Basic parameter testing is in place.
+0eb50e8 initial commit
+0c42e06 initial commit
+
 0.0.1  Fri Mar 26 00:47:26 2010
        Initial release.
 
