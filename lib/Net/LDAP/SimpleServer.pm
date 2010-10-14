@@ -12,7 +12,7 @@ use Scalar::Util qw(reftype);
 use Config::General qw(ParseConfig);
 use Net::LDAP::SimpleServer::LDIFStore;
 
-use constant DEFAULT_CONFIG_FILE => '.netldapsimpleserver.conf';
+use constant DEFAULT_CONFIG_FILE => '.perl.simpleserver.conf';
 
 sub new {
     my ( $class, $param ) = @_;
@@ -85,7 +85,7 @@ This document describes Net::LDAP::SimpleServer version 0.0.3
 
 Using, respectively, the default configuration file, which is
 
-    {HOME}/.netldapsimpleserver.conf
+    {HOME}/.perl.simpleserver.conf
 
 Or using a specified file as the configuration file.
 Alternatively, all the configuration can be passed as a hash reference:
@@ -102,6 +102,17 @@ Alternatively, all the configuration can be passed as a hash reference:
 =for author to fill in:
     Write a full description of the module and its features here.
     Use subsections (=head2, =head3) as appropriate.
+
+As the name suggests, this module aims to implement a simple LDAP server, 
+using many components already available in CPAN. It can be used for
+prototyping and/or development purposes. This is B<NOT> intended to be a
+production-grade server, altough some brave souls in small offices might
+use it as such.
+
+As of October 2010, the server will simply load a LDIF file and serve its
+contents through the LDAP protocol. Many operations are B<NOT> available yet,
+notably writing into the directory tree, but we would like to implement that
+in a near future.
 
 
 =head1 INTERFACE 
