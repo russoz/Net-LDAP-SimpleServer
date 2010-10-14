@@ -155,7 +155,7 @@ referenced by HASHREF B<must> contain a key named C<< ldif >>, which must
 point to either a filename or a file handle, and it B<may> contain a key named
 C<< ldif_options >>, which may contain optional parameters used in the
 3-parameter version of the C<Net::LDAP::LDIF> constructor. The LDIF file will
-be opened 
+be used for reading the data.
 
 =item new( LDIF )
 
@@ -169,8 +169,8 @@ Uses an existing C<< Net::LDAP::LDIF >> as the source for the directory data.
 
 =item load( PARAM )
 
-Load data from C<< $param >>, where C<< $param >> can be any of the expected
-parameters passed to the constructor.
+Loads data from a source specified by PARAM. The argument may be in any of the
+forms accepted by the constructor, except that it B<must> be specified.
 
 =item ldif()
 
