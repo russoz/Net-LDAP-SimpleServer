@@ -1,5 +1,12 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.4   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.4
+======= ======================================================================
+cb4769e moved to version 0.0.4
+6471508 removed unnecessary export from Scalar::Util
+90c0fab Actually implemented the store
+3621005 added more documentation
+
 0.0.3   12.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.3
 ======= ======================================================================
 7359e48 mkdist eye-candy on the output

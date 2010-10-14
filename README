@@ -2,7 +2,7 @@ NAME
     Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
 VERSION
-    This document describes Net::LDAP::SimpleServer version 0.0.3
+    This document describes Net::LDAP::SimpleServer version 0.0.4
 
 SYNOPSIS
         use Net::LDAP::SimpleServer;
@@ -13,7 +13,7 @@ SYNOPSIS
 
     Using, respectively, the default configuration file, which is
 
-        {HOME}/.netldapsimpleserver.conf
+        {HOME}/.perl.simpleserver.conf
 
     Or using a specified file as the configuration file. Alternatively, all
     the configuration can be passed as a hash reference:
@@ -25,6 +25,17 @@ SYNOPSIS
         $server->run();
 
 DESCRIPTION
+    As the name suggests, this module aims to implement a simple LDAP
+    server, using many components already available in CPAN. It can be used
+    for prototyping and/or development purposes. This is NOT intended to be
+    a production-grade server, altough some brave souls in small offices
+    might use it as such.
+
+    As of October 2010, the server will simply load a LDIF file and serve
+    its contents through the LDAP protocol. Many operations are NOT
+    available yet, notably writing into the directory tree, but we would
+    like to implement that in a near future.
+
 INTERFACE
   new()
 DIAGNOSTICS
