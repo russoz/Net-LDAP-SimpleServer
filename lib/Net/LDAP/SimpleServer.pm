@@ -16,22 +16,37 @@ use constant DEFAULT_CONFIG_FILE => '.ldapsimpleserver.conf';
 
 sub new {
     my ( $class, $param ) = @_;
+    my $self = bless( {}, $class );
 
     my $config;
     if ( reftype($param) eq 'HASH' ) {
-
         # $param is a hash with configuration
         $config = $param;
     }
     else {
-
         # or a configuration file
-        my $cfgfile = $param
+        my $file = $param
           || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
 
-        $config = _read_config_file($cfgfile);
+        $config = _read_config_file($file);
+        $self->{config_file} = $file;
     }
-    return bless( { config => $config, }, $class );
+
+    eval { _config_ok($config); };
+    croak $@ if $@;
+
+    $self->{config} = $config;
+
+    return $self;
+}
+
+sub _config_ok {
+    my $config = shift;
+
+    croak q{Configuration has no data file."}
+      unless exists $config{DataFile};
+
+    return 1;
 }
 
 sub _read_config_file {
@@ -39,6 +54,7 @@ sub _read_config_file {
 
     croak q{Cannot read the configuration file "} . $file . q{".}
       unless -r $file;
+
     my %config = ParseConfig(
         -ConfigFile           => $file,
         -AllowMultiOptions    => 'no',
@@ -48,10 +64,19 @@ sub _read_config_file {
         -CComments            => 0,
     );
 
-    croak q{Must specify a data file in "} . $file . q{".}
-      unless exists $config{DataFile};
-
     return \%config;
+}
+
+sub refresh_config {
+    my $self = shift;
+    return unless exists $self->{config_file};
+
+    my $config = _read_config_file($self->{config_file});
+
+    eval { _config_ok($config); };
+    croak $@ if $@;
+
+    $self->{config} = $config;
 }
 
 sub _load_data {
@@ -171,7 +196,17 @@ Net::LDAP::SimpleServer requires no configuration files or environment variables
     the module is part of the standard Perl distribution, part of the
     module's distribution, or must be installed separately. ]
 
-None.
+L<< Carp >>
+
+L<< File::HomeDir >>
+
+L<< File::Spec::Functions >>
+
+L<< Scalar::Util >>
+
+L<< Config::General >>
+
+L<< Net::LDAP::SimpleServer::LDIFStore >>
 
 
 =head1 INCOMPATIBILITIES
