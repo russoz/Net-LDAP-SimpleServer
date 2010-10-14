@@ -1,7 +1,6 @@
 Build.PL
 Changes
 MANIFEST
-Makefile.PL
 README
 lib/Net/LDAP/SimpleServer.pm
 lib/Net/LDAP/SimpleServer/LDIFStore.pm
