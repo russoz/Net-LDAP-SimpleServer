@@ -9,7 +9,7 @@ use UNIVERSAL::isa;
 use Scalar::Util qw(blessed reftype);
 use Net::LDAP::LDIF;
 
-use version; our $VERSION = qv('0.0.3');
+use version; our $VERSION = qv('0.0.4');
 
 sub new {
     my ( $class, $param ) = @_;
@@ -102,7 +102,7 @@ Net::LDAP::SimpleServer::LDIFStore - Data store to support C<Net::LDAP::SimpleSe
 
 =head1 VERSION
 
-This document describes Net::LDAP::SimpleServer::LDIFStore version 0.0.3
+This document describes Net::LDAP::SimpleServer::LDIFStore version 0.0.4
 
 =head1 SYNOPSIS
 
