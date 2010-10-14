@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.4');
+use version; our $VERSION = qv('0.0.5');
 
 use File::HomeDir;
 use File::Spec::Functions qw(catfile);
@@ -73,7 +73,7 @@ Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
 =head1 VERSION
 
-This document describes Net::LDAP::SimpleServer version 0.0.4
+This document describes Net::LDAP::SimpleServer version 0.0.5
 
 =head1 SYNOPSIS
 
