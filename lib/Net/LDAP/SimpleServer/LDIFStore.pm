@@ -6,7 +6,7 @@ use diagnostics;
 
 use Carp;
 use UNIVERSAL::isa;
-use Scalar::Util qw(blessed reftype openhandle);
+use Scalar::Util qw(blessed reftype);
 use Net::LDAP::LDIF;
 
 use version; our $VERSION = qv('0.0.3');
