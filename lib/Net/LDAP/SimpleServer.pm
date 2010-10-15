@@ -44,7 +44,7 @@ sub _config_ok {
     my $config = shift;
 
     croak q{Configuration has no data file."}
-      unless exists $config->{DataFile};
+      unless exists $config->{data};
 
     return 1;
 }
@@ -104,23 +104,24 @@ This document describes Net::LDAP::SimpleServer version 0.0.5
 
     use Net::LDAP::SimpleServer;
 
+    # using default configuration file
     my $server = Net::LDAP::SimpleServer->new();
+
+    # passing a specific configuration file
     my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
-    $server->run();
 
-Using, respectively, the default configuration file, which is
-
-    {HOME}/.ldapsimpleserver.conf
-
-Or using a specified file as the configuration file.
-Alternatively, all the configuration can be passed as a hash reference:
-
+    # passing configurations in a hash
     my $server = Net::LDAP::SimpleServer->new({
         port => 5000,
         data => '/path/to/data.ldif',
     });
+
+    # make it spin
     $server->run();
 
+The default configuration file is:
+
+    ${HOME}/.ldapsimpleserver.conf
 
 =head1 DESCRIPTION
 
