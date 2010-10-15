@@ -1,5 +1,9 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.6   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.6
+======= ======================================================================
+b9c1872 Requires Net::LDAP, duh
+
 0.0.5   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.5
 ======= ======================================================================
 ca8f5d7 improved documentation

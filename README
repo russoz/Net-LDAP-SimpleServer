@@ -2,7 +2,7 @@ NAME
     Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
 VERSION
-    This document describes Net::LDAP::SimpleServer version 0.0.5
+    This document describes Net::LDAP::SimpleServer version 0.0.6
 
 SYNOPSIS
         use Net::LDAP::SimpleServer;
