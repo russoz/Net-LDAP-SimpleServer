@@ -232,6 +232,10 @@ C<< ${HOME}/.ldapsimpleserver.conf >>.
     the module is part of the standard Perl distribution, part of the
     module's distribution, or must be installed separately. ]
 
+L<< Net::LDAP >>
+
+L<< UNIVERSAL::isa >>
+
 L<< Carp >>
 
 L<< File::HomeDir >>
