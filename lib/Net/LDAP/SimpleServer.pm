@@ -44,7 +44,7 @@ sub _config_ok {
     my $config = shift;
 
     croak q{Configuration has no data file."}
-      unless exists $config{DataFile};
+      unless exists $config->{DataFile};
 
     return 1;
 }
