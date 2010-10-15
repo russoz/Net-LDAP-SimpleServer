@@ -129,6 +129,8 @@ The default configuration file is:
     Write a full description of the module and its features here.
     Use subsections (=head2, =head3) as appropriate.
 
+B<< WORK IN PROGRESS!! NOT READY TO USE YET!! >>
+
 As the name suggests, this module aims to implement a simple LDAP server, 
 using many components already available in CPAN. It can be used for
 prototyping and/or development purposes. This is B<NOT> intended to be a
@@ -141,17 +143,36 @@ notably writing into the directory tree, but we would like to implement that
 in a near future.
 
 
-=head1 INTERFACE 
+=head1 CONSTRUCTOR 
 
-=head2 new()
+=over
 
+=item new()
 
+Attempts to create a server by using the default configuration file,
+C<< ${HOME}/.ldapsimpleserver.conf >>.
 
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
+=item new( FILE )
+
+Attempts to create a server using the specified configuration file.
+
+=item new( HASHREF )
+
+Attempts to create a server by using the options specified in a hash
+reference rather than reading them from a configuration file.
+
+=back
+
+=head1 METHODS 
+
+=over
+
+=item refresh_config()
+
+If the server was constructed using a configuration file, this method
+will attempt to reload the options from that file.
+
+=back
 
 
 =head1 DIAGNOSTICS
@@ -186,7 +207,19 @@ in a near future.
     that can be set. These descriptions must also include details of any
     configuration language used.
   
-Net::LDAP::SimpleServer requires no configuration files or environment variables.
+Net::LDAP::SimpleServer may use a configuration file to specify the
+server settings. If no file is specified and options are not passed
+in a hash, this module will look for a default configuration file named
+C<< ${HOME}/.ldapsimpleserver.conf >>. 
+
+    data /path/to/a/ldif/file.ldif
+    #port 389
+    #root_id cn=root
+    #root_pw somepassword
+    #objectclass_req (true|false)
+    #user_tree dc=some,dc=subtree,dc=com
+    #user_id_attr uid
+    #user_pw_attr password
 
 
 =head1 DEPENDENCIES
