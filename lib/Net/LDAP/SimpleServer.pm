@@ -20,10 +20,12 @@ sub new {
 
     my $config;
     if ( reftype($param) eq 'HASH' ) {
+
         # $param is a hash with configuration
         $config = $param;
     }
     else {
+
         # or a configuration file
         my $file = $param
           || File::Spec->catfile( home(), DEFAULT_CONFIG_FILE );
@@ -71,7 +73,7 @@ sub refresh_config {
     my $self = shift;
     return unless exists $self->{config_file};
 
-    my $config = _read_config_file($self->{config_file});
+    my $config = _read_config_file( $self->{config_file} );
 
     eval { _config_ok($config); };
     croak $@ if $@;

@@ -1,5 +1,18 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.5   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.5
+======= ======================================================================
+ca8f5d7 improved documentation
+e7f6fcd adjusted documentation to/fro code
+b665d11 fixed missing indirection operator
+04cb3b8 removed Makefile.PL from MANIFEST
+1d3d5e2 Coded configuration checking
+9bfcf15 updated version number to 0.0.5
+6e03cb1 changed the default configuration file
+28c4cc6 Fixed documentation.
+dc4dcbd added git tagging to the script
+bbf4820 removed Makefile.PL
+
 0.0.4   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.4
 ======= ======================================================================
 cb4769e moved to version 0.0.4

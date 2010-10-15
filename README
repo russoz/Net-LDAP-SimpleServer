@@ -2,29 +2,33 @@ NAME
     Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
 
 VERSION
-    This document describes Net::LDAP::SimpleServer version 0.0.4
+    This document describes Net::LDAP::SimpleServer version 0.0.5
 
 SYNOPSIS
         use Net::LDAP::SimpleServer;
 
+        # using default configuration file
         my $server = Net::LDAP::SimpleServer->new();
+
+        # passing a specific configuration file
         my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
-        $server->run();
 
-    Using, respectively, the default configuration file, which is
-
-        {HOME}/.perl.simpleserver.conf
-
-    Or using a specified file as the configuration file. Alternatively, all
-    the configuration can be passed as a hash reference:
-
+        # passing configurations in a hash
         my $server = Net::LDAP::SimpleServer->new({
             port => 5000,
             data => '/path/to/data.ldif',
         });
+
+        # make it spin
         $server->run();
 
+    The default configuration file is:
+
+        ${HOME}/.ldapsimpleserver.conf
+
 DESCRIPTION
+    WORK IN PROGRESS!! NOT READY TO USE YET!!
+
     As the name suggests, this module aims to implement a simple LDAP
     server, using many components already available in CPAN. It can be used
     for prototyping and/or development purposes. This is NOT intended to be
@@ -36,8 +40,23 @@ DESCRIPTION
     available yet, notably writing into the directory tree, but we would
     like to implement that in a near future.
 
-INTERFACE
-  new()
+CONSTRUCTOR
+    new()
+        Attempts to create a server by using the default configuration file,
+        "${HOME}/.ldapsimpleserver.conf".
+
+    new( FILE )
+        Attempts to create a server using the specified configuration file.
+
+    new( HASHREF )
+        Attempts to create a server by using the options specified in a hash
+        reference rather than reading them from a configuration file.
+
+METHODS
+    refresh_config()
+        If the server was constructed using a configuration file, this
+        method will attempt to reload the options from that file.
+
 DIAGNOSTICS
     "Error message here, perhaps with %s placeholders"
         [Description of error here]
@@ -48,11 +67,32 @@ DIAGNOSTICS
         [Et cetera, et cetera]
 
 CONFIGURATION AND ENVIRONMENT
-    Net::LDAP::SimpleServer requires no configuration files or environment
-    variables.
+    Net::LDAP::SimpleServer may use a configuration file to specify the
+    server settings. If no file is specified and options are not passed in a
+    hash, this module will look for a default configuration file named
+    "${HOME}/.ldapsimpleserver.conf".
+
+        data /path/to/a/ldif/file.ldif
+        #port 389
+        #root_id cn=root
+        #root_pw somepassword
+        #objectclass_req (true|false)
+        #user_tree dc=some,dc=subtree,dc=com
+        #user_id_attr uid
+        #user_pw_attr password
 
 DEPENDENCIES
-    None.
+    Carp
+
+    File::HomeDir
+
+    File::Spec::Functions
+
+    Scalar::Util
+
+    Config::General
+
+    Net::LDAP::SimpleServer::LDIFStore
 
 INCOMPATIBILITIES
     None reported.
