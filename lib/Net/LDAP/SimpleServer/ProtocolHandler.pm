@@ -15,16 +15,17 @@ use base 'Net::LDAP::Server';
 use fields qw(store);
 
 sub new {
-    my ( $class, $store, $sock ) = @_;
-    my $self = $class->SUPER::new($sock);
+    my $class = shift;
+    my $store = shift;
+    my $self = $class->SUPER::new(@_);
+
     #printf "Accepted connection from: %s\n", $sock->peerhost();
     $self->{store} = $store;
 
-    croak 'Must pass store and socket!' unless ($store and $sock);
+    croak 'Must pass store!' unless $store;
 
     return $self;
 }
-
 
 1;    # Magic true value required at end of module
 __END__
