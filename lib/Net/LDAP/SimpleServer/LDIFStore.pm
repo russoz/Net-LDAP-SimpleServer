@@ -44,7 +44,7 @@ sub _open_ldif {
 
     return $param if blessed($param) && $param->isa('Net::LDAP::LDIF');
 
-    my $reftype = reftype($param);
+    my $reftype = reftype($param) // '';
     if ( $reftype eq 'HASH' ) {
         croak q{Hash parameter must contain a "ldif" parameter}
           unless exists $param->{ldif};
