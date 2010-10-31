@@ -40,10 +40,8 @@ sub options {
     $self->SUPER::options($template);
 
     ### add a single value option
-    $_add_option->( $prop, $template, 'store',   undef );
     $_add_option->( $prop, $template, 'data',    undef );
-    $_add_option->( $prop, $template, 'handler', undef );
-    $_add_option->( $prop, $template, 'root_id', undef );
+    $_add_option->( $prop, $template, 'root_dn', undef );
     $_add_option->( $prop, $template, 'root_pw', undef );
 }
 
@@ -52,7 +50,7 @@ sub default_values {
         host         => '*',
         port         => 389,
         proto        => 'tcp',
-        root_id      => 'cn=root',
+        root_dn      => 'cn=root',
         root_pw      => 'ldappw',
         syslog_ident => 'Net::LDAP::SimpleServer-'
           . $Net::LDAP::SimpleServer::VERSION,
@@ -64,7 +62,7 @@ sub post_configure_hook {
     my $self = shift;
     my $prop = $self->{'ldap'};
 
-    croak q{Configuration has no data file!}
+    croak q{Configuration has no "data" file!}
       unless exists $prop->{data};
     croak q{Cannot read data file "} . $prop->{data} . q{"}
       unless -r $prop->{data};
@@ -99,13 +97,22 @@ This document describes Net::LDAP::SimpleServer version 0.0.7
 
 =head1 SYNOPSIS
 
+B<< WORK IN PROGRESS!! NOT READY TO USE YET!! >>
+
+    package MyServer;
+
     use Net::LDAP::SimpleServer;
+
+    # Or, specifying a Net::Server personality
+    use Net::LDAP::SimpleServer 'PreFork';
 
     # using default configuration file
     my $server = Net::LDAP::SimpleServer->new();
 
     # passing a specific configuration file
-    my $server = Net::LDAP::SimpleServer->new( 'ldapconfig.conf' );
+    my $server = Net::LDAP::SimpleServer->new({
+        conf_file => '/etc/ldapconfig.conf'
+    });
 
     # passing configurations in a hash
     my $server = Net::LDAP::SimpleServer->new({
@@ -126,15 +133,13 @@ The default configuration file is:
     Write a full description of the module and its features here.
     Use subsections (=head2, =head3) as appropriate.
 
-B<< WORK IN PROGRESS!! NOT READY TO USE YET!! >>
-
 As the name suggests, this module aims to implement a simple LDAP server, 
 using many components already available in CPAN. It can be used for
 prototyping and/or development purposes. This is B<NOT> intended to be a
 production-grade server, altough some brave souls in small offices might
 use it as such.
 
-As of October 2010, the server will simply load a LDIF file and serve its
+As of November 2010, the server will simply load a LDIF file and serve its
 contents through the LDAP protocol. Many operations are B<NOT> available yet,
 notably writing into the directory tree, but we would like to implement that
 in a near future.
@@ -142,16 +147,15 @@ in a near future.
 
 =head1 CONSTRUCTOR 
 
+The constructors will follow the rules defined by L<Net::Server>, but most
+notably we have the two forms below:
+
 =over
 
 =item new()
 
 Attempts to create a server by using the default configuration file,
 C<< ${HOME}/.ldapsimpleserver.conf >>.
-
-=item new( FILE )
-
-Attempts to create a server using the specified configuration file.
 
 =item new( HASHREF )
 
@@ -164,13 +168,54 @@ reference rather than reading them from a configuration file.
 
 =over
 
-=item refresh_config()
+=item options()
 
-If the server was constructed using a configuration file, this method
-will attempt to reload the options from that file.
+As specified in L<Net::Server>, this method creates new options for the,
+server, namely:
+
+=over
+
+data - the LDIF data file used by LDIFStore
+
+root_dn - the administrator DN of the repository
+
+root_pw - the password for root_dn
 
 =back
 
+=item default_values()
+
+As specified in L<Net::Server>, this method provides default values for a
+number of options. In Net::LDAP::SimpleServer, this method is defined as:
+
+    sub default_values {
+        return {
+            host         => '*',
+            port         => 389,
+            proto        => 'tcp',
+            root_id      => 'cn=root',
+            root_pw      => 'ldappw',
+            syslog_ident => 'Net::LDAP::SimpleServer-'
+                . $Net::LDAP::SimpleServer::VERSION,
+            conf_file => DEFAULT_CONFIG_FILE,
+        };
+    }
+
+Notice that we do set a default password for the C<< cn=root >> DN. This
+allows for out-of-the-box testing, but make sure you change the password
+when putting this to production use.
+
+=item post_configure_hook()
+
+Method specified by L<Net::Server> to validate the passed options
+
+=item process_request()
+
+Method specified by L<Net::Server> to actually handle one connection. In this
+module it basically delegates the processing to 
+L<Net::LDAP::SimpleServer::ProtocolHandler>.
+
+=back
 
 =head1 DIAGNOSTICS
 
