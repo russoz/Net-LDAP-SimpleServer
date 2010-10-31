@@ -27,34 +27,40 @@ sub load {
 
     croak 'Must pass parameter!' unless $param;
 
-    $self->{ldif} = _open_ldif($param);
-    $self->{list} = _load_ldif( $self->{ldif} );
+    $self->{ldifobj} = _open_ldif($param);
+    $self->{list}    = _load_ldif( $self->{ldifobj} );
 }
 
 sub ldif {
     my $self = shift;
-    return $self->{ldif};
+    return $self->{ldifobj};
 }
 
 #
 # opens a filename, a file-handle, or a Net::LDAP::LDIF object
 #
 sub _open_ldif {
-    my $param = shift;
+    my $param = shift // '';
 
     return $param if blessed($param) && $param->isa('Net::LDAP::LDIF');
 
-    my $reftype = reftype($param) || '';
-    croak 'Invalid argument!' if $reftype ne 'HASH';
+    my $reftype = reftype($param);
+    if ( $reftype eq 'HASH' ) {
+        croak q{Hash parameter must contain a "ldif" parameter}
+          unless exists $param->{ldif};
 
-    croak q{Hash parameter must contain a "ldif" parameter}
-      unless exists $param->{ldif};
+        return Net::LDAP::LDIF->new(
+            $param->{ldif},
+            'r',
+            (
+                exists $param->{ldif_options}
+                ? %{ $param->{ldif_options} }
+                : undef
+            )
+        );
+    }
 
-    return Net::LDAP::LDIF->new( $param->{ldif}, 'r',
-        %{ $param->{ldif_options} } )
-      if exists $param->{ldif_options};
-
-    return Net::LDAP::LDIF->new($param)->{ldif};
+    return Net::LDAP::LDIF->new($param);
 }
 
 #
