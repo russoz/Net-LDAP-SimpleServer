@@ -212,7 +212,7 @@ Method specified by L<Net::Server> to validate the passed options
 =item process_request()
 
 Method specified by L<Net::Server> to actually handle one connection. In this
-module it basically delegates the processing to 
+module it basically delegates the processing to
 L<Net::LDAP::SimpleServer::ProtocolHandler>.
 
 =back

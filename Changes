@@ -1,5 +1,21 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.7   31.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.7
+======= ======================================================================
+b03b9b9 tidying all *.pm and *.t files
+6823852 Docs and glitches in SimpleServer.pm
+48e3cd5 supressed unitialized values warning
+70fa566 Added the ProtocolHandler class and its first test
+d3405b2 Improved legibility and rewrote _open_ldif()
+f427cc9 Added the ProtocolHandler class and its first test
+ae3a4ad Proper documentation for ProtocolHandler
+284d4d0 Merge branch 'master' of https://github.com/russoz/Net-LDAP-SimpleServer
+9489d1a Started working on the Net::Server functions
+ef87fb3 Removed dependency on the Net::LDAP::Server 1-param constructor
+47ab728 updated dependency list
+143c304 improved perlcritic.t
+e6033ed added dependencies documentation
+
 0.0.6   14.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.6
 ======= ======================================================================
 b9c1872 Requires Net::LDAP, duh
