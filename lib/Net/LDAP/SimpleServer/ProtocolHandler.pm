@@ -3,16 +3,14 @@ package Net::LDAP::SimpleServer::ProtocolHandler;
 use strict;
 use warnings;
 
-use Carp;
-use UNIVERSAL::isa;
-use Scalar::Util qw(blessed reftype);
-use Net::LDAP::LDIF;
-
-use version; our $VERSION = qv('0.0.4');
-
 use Net::LDAP::Server;
 use base 'Net::LDAP::Server';
 use fields qw(store);
+
+use Carp;
+use Net::LDAP::LDIF;
+
+use version; our $VERSION = qv('0.0.4');
 
 sub new {
     my $class = shift;
@@ -32,7 +30,7 @@ __END__
 
 =head1 NAME
 
-Net::LDAP::SimpleServer::ProtocolHandler - Data store to support C<Net::LDAP::SimpleServer>
+Net::LDAP::SimpleServer::ProtocolHandler - LDAP protocol handler used with C<Net::LDAP::SimpleServer>
 
 =head1 VERSION
 
@@ -42,80 +40,29 @@ This document describes Net::LDAP::SimpleServer::ProtocolHandler version 0.0.4
 
     use Net::LDAP::SimpleServer::ProtocolHandler;
 
-    my $store = Net::LDAP::SimpleServer::ProtocolHandler->new();
-    $store->load( "data.ldif" );
-
-    my $store =
-      Net::LDAP::SimpleServer::ProtocolHandler->new({ ldif => 'data.ldif' });
-
-    my $ldif = Net::LDAP::LDIF->new( "file.ldif" );
-    my $store = Net::LDAP::SimpleServer::ProtocolHandler->new($ldif);
-
-    my $result = $store->filter( sub {
-      $a = shift;
-      $a->get_value('cn') =~ m/joe/i;
-    } );
+    my $store = Net::LDAP::SimpleServer::LDIFStore->new( $datafile );
+    my $handler =
+      Net::LDAP::SimpleServer::ProtocolHandler->new( $store, $socket );
 
 =head1 DESCRIPTION
 
-This module provides an interface between Net::LDAP::SimpleServer and a
-LDIF file where the data is stored.
-
-As of now, this interface is quite simple, and so is the underlying data
-structure, but this can be easily improved in the future.
+This module provides an interface between Net::LDAP::SimpleServer and the
+underlying data store. Currently only L<Net::LDAP::SimpleServer::LDIFStore>
+is available.
 
 =head1 CONSTRUCTOR 
 
 =over
 
-=item new()
+=item new( STORE, OPTIONS )
 
-Creates a store with no data in it. It cannot be really used like that, you 
-B<must> C<< load() >> some data in it first.
-
-=item new( FILE )
-
-Create the data store by reading FILE, which may be the name of a file or an
-already open filehandle. It is passed directly to
-L<<  Net::LDAP::LDIF >>.
-
-Constructor. Expects either: a filename, a file handle, a hash reference or
-a reference to a C<Net::LDAP::LDIF> object.
-
-=item new( HASHREF )
-
-Create the data store using the parameters in HASHREF. The associative-array
-referenced by HASHREF B<must> contain a key named C<< ldif >>, which must
-point to either a filename or a file handle, and it B<may> contain a key named
-C<< ldif_options >>, which may contain optional parameters used in the
-3-parameter version of the C<Net::LDAP::LDIF> constructor. The LDIF file will
-be used for reading the data.
-
-=item new( LDIF )
-
-Uses an existing C<< Net::LDAP::LDIF >> as the source for the directory data.
+Creates a new handler for the LDAP protocol, using STORE as the backend
+where the directory data is stored. The rest of the OPTIONS are the same
+as in the L<Net::LDAP::Server> module.
 
 =back
 
 =head1 METHODS
-
-=over
-
-=item load( PARAM )
-
-Loads data from a source specified by PARAM. The argument may be in any of the
-forms accepted by the constructor, except that it B<must> be specified.
-
-=item ldif()
-
-Returns the underlying C<< Net::LDAP::LDIF >> object.
-
-=item filter( SUBREF )
-
-Returns a list of entries for which the function referenced by SUBREF returns
-C<true>.
-
-=back
 
 =for head1 DIAGNOSTICS
 
@@ -141,7 +88,7 @@ C<true>.
     that can be set. These descriptions must also include details of any
     configuration language used.
   
-Net::LDAP::SimpleServer requires no configuration files or environment variables.
+Net::LDAP::SimpleServer::ProtocolHandler requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
@@ -150,6 +97,8 @@ L<< UNIVERSAL::isa >>
 L<< Scalar::Util >>
 
 L<< Net::LDAP::LDIF >>
+
+L<< Net::LDAP::Server >>
 
 =head1 INCOMPATIBILITIES
 
