@@ -2,7 +2,7 @@
 
 use Test::More;
 
-if( ! exists $ENV{RUSSOZ_IS_IN_THE_HOUSE} ) {
+if ( !exists $ENV{RUSSOZ_IS_IN_THE_HOUSE} ) {
     plan skip_all => "Author tests aren't required to install this module";
 }
 
