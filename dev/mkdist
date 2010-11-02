@@ -25,9 +25,15 @@ is_dry_run && {
     msg "***** DRY-RUN: use -f to actually commit! *****"
 }
 
+msg "== Running ./Build.PL"
+perl ./Build.PL || exit 1
+
+msg "== Running tests"
+./Build disttest || exit 1
+
 msg "== Running through perltidy"
 {
-    find lib/ -name '*.pm' | xargs perltidy -b
+    find lib/ -name '*.pm' | xargs perltidy -b \
     && find t/ -name '*.t' | xargs perltidy -b
 } || {
     msg "**** Failed syntax check! Aborting."
@@ -43,9 +49,6 @@ msg "== Making README"
   cd lib; perldoc -t -F ${modulepath} > ${readme} ) \
   || exit 1
 is_dry_run || git add README
-
-msg "== Running ./Build.PL"
-perl ./Build.PL || exit 1
 
 msg "== Creating META.yml"
 ./Build distmeta || exit 1
