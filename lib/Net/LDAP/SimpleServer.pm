@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-use version; our $VERSION = qv('0.0.7');
+use version; our $VERSION = qv('0.0.8');
 our $personality = undef;
 
 sub import {
@@ -90,10 +90,6 @@ __END__
 =head1 NAME
 
 Net::LDAP::SimpleServer - Minimal-configuration, read-only LDAP server
-
-=head1 VERSION
-
-This document describes Net::LDAP::SimpleServer version 0.0.7
 
 =head1 SYNOPSIS
 
