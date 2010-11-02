@@ -66,7 +66,7 @@ is_dry_run && changes=/dev/tty
 cp Changes __changes && {
     echo "Revision history for ${moduledash}"
     echo ""
-    printf '%-7s %s %s\n' "${version}" "$(date +%d.%m.%Y)" \
+    printf '%-7s %s %s\n' "" "$(date +%d.%m.%Y)" \
         "${modulename} DIST VERSION ${version}"
     perl -e 'print "="x7 . " " . "="x70 . "\n"'
     git log --oneline | perl -nle 'exit if /DIST VERSION/; print "$_";' &&
