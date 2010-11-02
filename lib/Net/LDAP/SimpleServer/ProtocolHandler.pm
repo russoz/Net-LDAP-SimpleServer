@@ -10,12 +10,12 @@ use fields qw(store);
 use Carp;
 use Net::LDAP::LDIF;
 
-use version; our $VERSION = qv('0.0.4');
+use version; our $VERSION = qv('0.0.7');
 
 sub new {
     my $class = shift;
     my $store = shift;
-    my $self = $class->SUPER::new(@_);
+    my $self  = $class->SUPER::new(@_);
 
     #printf "Accepted connection from: %s\n", $sock->peerhost();
     $self->{store} = $store;
@@ -31,10 +31,6 @@ __END__
 =head1 NAME
 
 Net::LDAP::SimpleServer::ProtocolHandler - LDAP protocol handler used with C<Net::LDAP::SimpleServer>
-
-=head1 VERSION
-
-This document describes Net::LDAP::SimpleServer::ProtocolHandler version 0.0.4
 
 =head1 SYNOPSIS
 
