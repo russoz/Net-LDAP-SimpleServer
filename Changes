@@ -1,5 +1,20 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.9   06.11.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.9
+======= ======================================================================
+ed4fe82 added files to iand sorted MANIFEST
+b06bb66 test for building a LDIFStore
+8bd47ff LDIF file for testing
+86ff9d5 test for building a ProtocolHandler
+e24482c bumped version up to 0.0.9
+e85df80 bumped version up to 0.0.9
+fb49924 added examples/test1.ldif
+07ea91e leaner message in Changes
+ad77070 perltidy
+95acc7e Perltidy + bump version to 0.0.7
+0e49cff Bumper version to 0.0.8, removed version from perldoc
+b2844fe Tidying and Testing
+
 0.0.7   31.10.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.7
 ======= ======================================================================
 b03b9b9 tidying all *.pm and *.t files
