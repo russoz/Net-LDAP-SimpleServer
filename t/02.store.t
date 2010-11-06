@@ -1,36 +1,28 @@
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 
 sub _check_param {
     my @p = @_;
     eval { my $o = Net::LDAP::SimpleServer::LDIFStore->new(@p); };
+    return $@;
 }
 
 sub check_param_success {
     my $p = _check_param(@_);
-    ok($p);
+    ok( not $p );
 }
 
 sub check_param_failure {
     my $p = _check_param(@_);
-    ok( not $p );
+    ok($p);
 }
 
-diag("Testing parameters for the constructor\n");
+diag("Testing the constructor params for LDIFStore\n");
 
+my $obj = undef;
+
+#$obj = new_ok( 'Net::LDAP::SimpleServer::LDIFStore', [ 'name/of/a/file/that/will/never/ever/exist.ldif' ] );
 check_param_failure('name/of/a/file/that/will/never/ever/exist.ldif');
-
-#if ( -r $cfgfile ) {
-#    diag( "Using default cfg file: " . $cfgfile );
-#    check_param_success();
-#}
-#else {
-#    diag("Default cfg file not found");
-#    check_param_failure();
-#}
-
-#SKIP: {
-#    skip "Not messing with your default configuration file", 1
-#        if -r $cfgfile;
+$obj = new_ok( 'Net::LDAP::SimpleServer::LDIFStore', ['examples/test1.ldif'] );
 
