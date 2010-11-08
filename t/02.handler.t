@@ -23,9 +23,7 @@ sub check_param_failure {
 
 diag("Testing the constructor params for ProtocolHandler\n");
 
-my $obj = undef;
-
-$obj = new_ok(
+my $obj = new_ok(
     'Net::LDAP::SimpleServer::ProtocolHandler',
     [ $store, *STDIN{IO}, *STDOUT{IO} ]
 );

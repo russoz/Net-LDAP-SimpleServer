@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-use version; our $VERSION = qv('0.0.9');
+use version; our $VERSION = qv('0.0.10');
 our $personality = undef;
 
 sub import {
