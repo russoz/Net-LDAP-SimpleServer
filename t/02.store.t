@@ -1,4 +1,4 @@
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 
@@ -23,6 +23,9 @@ diag("Testing the constructor params for LDIFStore\n");
 my $obj = undef;
 
 #$obj = new_ok( 'Net::LDAP::SimpleServer::LDIFStore', [ 'name/of/a/file/that/will/never/ever/exist.ldif' ] );
+check_param_failure('');
 check_param_failure('name/of/a/file/that/will/never/ever/exist.ldif');
-$obj = new_ok( 'Net::LDAP::SimpleServer::LDIFStore', ['examples/test1.ldif'] );
+$obj =
+  new_ok( 'Net::LDAP::SimpleServer::LDIFStore',
+    ['examples/single-entry.ldif'] );
 
