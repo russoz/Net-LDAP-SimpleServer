@@ -16,6 +16,10 @@ msg() {
 }
 
 msg "== Checking current directory"
+[ -f ./MANIFEST ] || {
+    msg "**** Cannot find ./MANIFEST"
+    exit 1
+}
 [ -f ./lib/${modulepath} ] || {
     msg "**** Cannot find ./lib/${modulepath}"
     exit 1
@@ -35,6 +39,12 @@ _tidy() {
 msg "== Running through perltidy"
 { _tidy lib/ '*.pm' && _tidy t/ '*.t' && _tidy ./ '*.[Pp][Ll]'; } || {
     msg "**** Failed syntax check! Aborting."
+    exit 1
+}
+
+msg "== Sorting contents of MANIFEST"
+{ sort MANIFEST > __manifest && mv __manifest MANIFEST; } || {
+    msg "**** Cannot sort the MANIFEST file. Aborting."
     exit 1
 }
 
