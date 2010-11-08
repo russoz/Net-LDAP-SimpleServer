@@ -1,43 +1,30 @@
-use Test::More tests => 0;
-
-__DATA__
-
-use Net::LDAP::SimpleServer;
+use Test::More tests => 3;
 
 sub _check_param {
-    eval { Net::LDAP::SimpleServer->new(@_) };
+
+    #diag( join ',', @_ );
+    eval {
+        use Net::LDAP::SimpleServer;
+        my $s = Net::LDAP::SimpleServer->new(@_);
+        $s->run();
+    };
+
+    #diag( '$@ = ' . $@ );
+    return $@;
 }
 
-sub check_param_success {
-    my $p = _check_param(@_);
-    ok($p);
+sub check_failure {
+    ok( _check_param(@_) );
 }
 
-sub check_param_failure {
-    my $p = _check_param(@_);
-    ok( not $p );
-}
+diag('Testing the constructor params for SimpleServer');
 
-diag("Testing parameters for the constructor\n");
+check_failure();
+check_failure( {} );
 
-check_param_failure('name/of/a/file/that/will/never/ever/exist!');
+# Cannot test for non-existent configuration file right now
+# because Net::Server calls exit() when that happens >:-\
+#
+#check_failure( { conf_file => 'examples/no/file.conf' } );
 
-use File::HomeDir;
-use File::Spec::Functions qw(catfile);
-
-my $cfgfile =
-  catfile( home(), Net::Squid::Auth::Plugin::SimpleLDAP::DEFAULT_CONFIG_FILE );
-
-if ( -r $cfgfile ) {
-    diag( "Using default cfg file: " . $cfgfile );
-    check_param_success();
-}
-else {
-    diag("Default cfg file not found");
-    check_param_failure();
-}
-
-#SKIP: {
-#    skip "Not messing with your default configuration file", 1
-#        if -r $cfgfile;
-
+check_failure( { data => 'examples/test1.ldif' } );
