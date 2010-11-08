@@ -15,7 +15,7 @@ sub new {
     my ( $class, $param ) = @_;
     my $self = bless( { list => undef }, $class );
 
-    return $self unless $param;
+    croak 'Must pass parameter' unless $param;
 
     $self->load($param);
 
@@ -59,6 +59,9 @@ sub _open_ldif {
             )
         );
     }
+
+    # Then, it must be a filename
+    croak q{Cannot find file "} . $param . q{"} unless -r $param;
 
     return Net::LDAP::LDIF->new($param);
 }

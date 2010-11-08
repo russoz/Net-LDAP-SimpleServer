@@ -9,6 +9,8 @@ use fields qw(store);
 
 use Carp;
 use Net::LDAP::LDIF;
+use Scalar::Util qw{blessed};
+use UNIVERSAL::isa;
 
 use version; our $VERSION = qv('0.0.10');
 
@@ -17,10 +19,13 @@ sub new {
     my $store = shift;
     my $self  = $class->SUPER::new(@_);
 
+    croak 'Must pass store!' unless $store;
+    croak 'Not an object!'   unless blessed($store);
+    croak 'Not a LDIFStore!'
+      unless $store->isa('Net::LDAP::SimpleServer::LDIFStore');
+
     #printf "Accepted connection from: %s\n", $sock->peerhost();
     $self->{store} = $store;
-
-    croak 'Must pass store!' unless $store;
 
     return $self;
 }
