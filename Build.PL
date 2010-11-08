@@ -16,6 +16,7 @@ my $builder = Module::Build->new(
         'File::Path'        => 0,
         'File::Spec'        => 0,
         'File::HomeDir'     => 0,
+        'File::Basename'    => 0,
         'Test::More'        => 0,
         'version'           => 0,
         'Carp'              => 0,

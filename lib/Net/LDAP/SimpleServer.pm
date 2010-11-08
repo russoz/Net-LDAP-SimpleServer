@@ -16,6 +16,7 @@ sub import {
     die $@ if $@;
 }
 
+use File::Basename;
 use File::HomeDir;
 use File::Spec;
 use File::Path qw{make_path};
@@ -49,11 +50,6 @@ sub options {
 }
 
 sub default_values {
-    if ( !-d BASEDIR ) {
-        carp q{ Creating Net::LDAP::SimpleServer basedir: } . BASEDIR;
-        make_path(BASEDIR);
-        make_path(LOGDIR);
-    }
     return {
         host         => '*',
         port         => 389,
@@ -69,12 +65,25 @@ sub default_values {
     };
 }
 
+sub _make_dir {
+    my $file = shift;
+    return unless $file;
+
+    my $dir = dirname($file);
+    return unless $dir;
+    return if -d $dir;
+
+    make_path($dir);
+}
+
 sub post_configure_hook {
     my $self = shift;
     my $prop = $self->{'ldap'};
 
     croak q{Cannot find conf file "} . $self->{server}->{conf_file} . q{"}
       if $self->{server}->{conf_file} and not -r $self->{server}->{conf_file};
+    _make_dir($self->{server}->{log_file});
+    _make_dir($self->{server}->{pid_file});
     croak q{Configuration has no "data" file!}
       unless exists $prop->{data};
     croak qq{Cannot read data file "} . $prop->{data} . q{"}
