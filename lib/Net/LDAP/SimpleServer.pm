@@ -82,8 +82,8 @@ sub post_configure_hook {
 
     croak q{Cannot find conf file "} . $self->{server}->{conf_file} . q{"}
       if $self->{server}->{conf_file} and not -r $self->{server}->{conf_file};
-    _make_dir($self->{server}->{log_file});
-    _make_dir($self->{server}->{pid_file});
+    _make_dir( $self->{server}->{log_file} );
+    _make_dir( $self->{server}->{pid_file} );
     croak q{Configuration has no "data" file!}
       unless exists $prop->{data};
     croak qq{Cannot read data file "} . $prop->{data} . q{"}

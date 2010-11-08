@@ -30,7 +30,7 @@ SYNOPSIS
 
     The default configuration file is:
 
-        ${HOME}/.ldapsimpleserver.conf
+        ${HOME}/.ldapsimpleserver/config
 
 DESCRIPTION
     As the name suggests, this module aims to implement a simple LDAP
@@ -50,7 +50,7 @@ CONSTRUCTOR
 
     new()
         Attempts to create a server by using the default configuration file,
-        "${HOME}/.ldapsimpleserver.conf".
+        "${HOME}/.ldapsimpleserver/config".
 
     new( HASHREF )
         Attempts to create a server by using the options specified in a hash
@@ -110,7 +110,7 @@ CONFIGURATION AND ENVIRONMENT
     Net::LDAP::SimpleServer may use a configuration file to specify the
     server settings. If no file is specified and options are not passed in a
     hash, this module will look for a default configuration file named
-    "${HOME}/.ldapsimpleserver.conf".
+    "${HOME}/.ldapsimpleserver/config".
 
         data /path/to/a/ldif/file.ldif
         #port 389

@@ -1,5 +1,22 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.10  [2010.11.08 19:33:29] Net::LDAP::SimpleServer DIST VERSION 0.0.10
+======= ==============================================================================
+ef0f769 if needed creates directory for log_file and pid_file
+7a19809 Multiple changes
+19a76e3 added min version to Net::Server, added File::Path
+09a48a2 better param checking in the constructors
+8708fa5 added some tests for SimpleServer constructor
+a62ac40 added a test for empty params on constructor
+82cfee2 added test for non-existent ldif file as well
+cb865fb new example files
+0dc7aac new exaqmple and test files
+a9ebf2b checking for (and sorting) MANIFEST file
+62a774c minor cosmetic change
+e7d8624 bumped version to 0.0.10
+3c54751 improved mkdist
+c6aa48c mkdist: format of Changes file
+
 0.0.9   06.11.2010 Net::LDAP::SimpleServer DIST VERSION 0.0.9
 ======= ======================================================================
 ed4fe82 added files to iand sorted MANIFEST
