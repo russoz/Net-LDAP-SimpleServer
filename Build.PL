@@ -18,6 +18,8 @@ my $builder = Module::Build->new(
         'File::HomeDir'     => 0,
         'File::Basename'    => 0,
         'Test::More'        => 0,
+        'IO::Pipe'          => 0,
+        'common::sense'     => 0,
         'version'           => 0,
         'Carp'              => 0,
     },

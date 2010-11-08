@@ -76,7 +76,7 @@ msg "== Generating <Changes> automagically"
     echo ""
     printf '%-7s [%s] %s\n' "${version}" "$(date '+%Y.%m.%d %H:%M:%S')" \
         "${modulename} DIST VERSION ${version}"
-    perl -e 'print "="x7 . " " . "="x78 . "\n"'
+    perl -e 'print "="x7 . " " . "="x70 . "\n"'
     git log --oneline | perl -nle 'exit if /DIST VERSION/; print "$_";' &&
     echo "" &&
     cat Changes | perl -e '$a=<>; $a=<>; while(<>) { print }'

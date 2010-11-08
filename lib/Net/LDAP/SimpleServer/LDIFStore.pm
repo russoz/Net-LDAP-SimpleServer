@@ -9,7 +9,7 @@ use UNIVERSAL::isa;
 use Scalar::Util qw(blessed reftype);
 use Net::LDAP::LDIF;
 
-use version; our $VERSION = qv('0.0.10');
+use version; our $VERSION = qv('0.0.12');
 
 sub new {
     my ( $class, $param ) = @_;

@@ -1,10 +1,9 @@
 package Net::LDAP::SimpleServer;
 
-use strict;
-use warnings;
 use Carp;
+use common::sense;
 
-use version; our $VERSION = qv('0.0.10');
+use version; our $VERSION = qv('0.0.12');
 our $personality = undef;
 
 sub import {
@@ -12,8 +11,14 @@ sub import {
     $personality = shift || 'Fork';
 
     use Net::Server;
-    eval 'use base qw/Net::Server::' . $personality . '/';
-    die $@ if $@;
+    eval "use base qw{Net::Server::$personality}";
+    croak $@ if $@;
+
+    @Net::LDAP::SimpleServer::ISA = qw(Net::Server);
+
+    #use Data::Dumper;
+    #print STDERR Data::Dumper->Dump( [ \@Net::LDAP::SimpleServer::ISA ],
+    #    ['ISA'] );
 }
 
 use File::Basename;
@@ -30,7 +35,7 @@ use constant DEFAULT_CONFIG_FILE => File::Spec->catfile( BASEDIR, 'config' );
 use constant DEFAULT_DATA_FILE => File::Spec->catfile( BASEDIR, 'server.ldif' );
 
 my $_add_option = sub {
-    my ( $prop, $template, $opt, $initial ) = @_;
+    my ( $template, $prop, $opt, $initial ) = @_;
 
     $prop->{$opt}     = $initial;
     $template->{$opt} = \$prop->{$opt};
@@ -38,31 +43,34 @@ my $_add_option = sub {
 
 sub options {
     my ( $self, $template ) = @_;
-    my $prop = $self->{'ldap'};
-
     ### setup options in the parent classes
     $self->SUPER::options($template);
 
     ### add a single value option
-    $_add_option->( $prop, $template, 'data',    undef );
-    $_add_option->( $prop, $template, 'root_dn', undef );
-    $_add_option->( $prop, $template, 'root_pw', undef );
+    my $prop = $self->{server};
+    $_add_option->( $template, $prop, 'ldap_data', undef );
+    $_add_option->( $template, $prop, 'root_dn',   undef );
+    $_add_option->( $template, $prop, 'root_pw',   undef );
+
+    #use Data::Dumper;
+    #print STDERR Data::Dumper->Dump( [$self], ['options_END'] );
 }
 
 sub default_values {
-    return {
-        host         => '*',
-        port         => 389,
-        proto        => 'tcp',
-        root_dn      => 'cn=root',
-        root_pw      => 'ldappw',
-        log_file     => File::Spec->catfile( LOGDIR, 'server.log' ),
-        pid_file     => File::Spec->catfile( LOGDIR, 'server.pid' ),
-        conf_file    => -r DEFAULT_CONFIG_FILE ? DEFAULT_CONFIG_FILE : undef,
-        data         => -r DEFAULT_DATA_FILE ? DEFAULT_DATA_FILE : undef,
-        syslog_ident => 'Net::LDAP::SimpleServer-'
-          . $Net::LDAP::SimpleServer::VERSION,
-    };
+    my $self = @_;
+
+    my $v = {};
+    $v->{port}     = 389;
+    $v->{root_dn}  = 'cn=root';
+    $v->{root_pw}  = 'ldappw';
+    $v->{log_file} = File::Spec->catfile( LOGDIR, 'server.log' );
+
+    #$v->{pid_file} = File::Spec->catfile( LOGDIR, 'server.pid' );
+    $v->{conf_file} = DEFAULT_CONFIG_FILE if -r DEFAULT_CONFIG_FILE;
+    $v->{ldap_data} = DEFAULT_DATA_FILE   if -r DEFAULT_DATA_FILE;
+    $v->{syslog_ident} =
+      'Net::LDAP::SimpleServer-' . $Net::LDAP::SimpleServer::VERSION;
+    return $v;
 }
 
 sub _make_dir {
@@ -78,26 +86,33 @@ sub _make_dir {
 
 sub post_configure_hook {
     my $self = shift;
-    my $prop = $self->{'ldap'};
+    my $prop = $self->{server};
 
+    #use Data::Dumper;
+    #print STDERR '# ' . Data::Dumper->Dump( [$self], ['post_configure_hook'] );
     croak q{Cannot find conf file "} . $self->{server}->{conf_file} . q{"}
       if $self->{server}->{conf_file} and not -r $self->{server}->{conf_file};
     _make_dir( $self->{server}->{log_file} );
     _make_dir( $self->{server}->{pid_file} );
-    croak q{Configuration has no "data" file!}
-      unless exists $prop->{data};
-    croak qq{Cannot read data file "} . $prop->{data} . q{"}
-      unless -r $prop->{data};
+    croak q{Configuration has no "ldap_data" file!}
+      unless exists $prop->{ldap_data};
+    croak qq{Cannot read ldap_data file "} . $prop->{ldap_data} . q{"}
+      unless -r $prop->{ldap_data};
 
-    $prop->{store} = LDIFStore->new( $prop->{data} );
+    $prop->{store} =
+         Net::LDAP::SimpleServer::LDIFStore->new( $prop->{ldap_data} )
+      || croak q{Cannot create data store!};
 }
 
 sub process_request {
     my $self = shift;
 
-    my $in      = *STDIN{IO};
-    my $out     = *STDOUT{IO};
-    my $handler = ProtocolHandler->new( $self->{ldap}->{store}, $in, $out );
+    my $in  = *STDIN{IO};
+    my $out = *STDOUT{IO};
+    my $params =
+      { map { ( $_ => $self->{server}->{$_} ) } qw/store root_dn root_pw/ };
+    my $handler =
+      Net::LDAP::SimpleServer::ProtocolHandler->new( $params, $in, $out );
 
     until ( $handler->handle ) {
 
@@ -135,7 +150,7 @@ B<< WORK IN PROGRESS!! NOT READY TO USE YET!! >>
     # passing configurations in a hash
     my $server = Net::LDAP::SimpleServer->new({
         port => 5000,
-        data => '/path/to/data.ldif',
+        ldap_data => '/path/to/data.ldif',
     });
 
     # make it spin
@@ -193,7 +208,7 @@ server, namely:
 
 =over
 
-data - the LDIF data file used by LDIFStore
+ldap_data - the LDIF data file used by LDIFStore
 
 root_dn - the administrator DN of the repository
 
@@ -211,7 +226,7 @@ number of options. In Net::LDAP::SimpleServer, this method is defined as:
             host         => '*',
             port         => 389,
             proto        => 'tcp',
-            root_id      => 'cn=root',
+            root_dn      => 'cn=root',
             root_pw      => 'ldappw',
             syslog_ident => 'Net::LDAP::SimpleServer-'
                 . $Net::LDAP::SimpleServer::VERSION,
@@ -272,9 +287,9 @@ server settings. If no file is specified and options are not passed
 in a hash, this module will look for a default configuration file named
 C<< ${HOME}/.ldapsimpleserver/config >>. 
 
-    data /path/to/a/ldif/file.ldif
+    ldap_data /path/to/a/ldif/file.ldif
     #port 389
-    #root_id cn=root
+    #root_dn cn=root
     #root_pw somepassword
     #objectclass_req (true|false)
     #user_tree dc=some,dc=subtree,dc=com

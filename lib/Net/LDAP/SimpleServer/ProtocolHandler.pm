@@ -1,33 +1,109 @@
 package Net::LDAP::SimpleServer::ProtocolHandler;
 
-use strict;
-use warnings;
+use common::sense;
 
 use Net::LDAP::Server;
 use base 'Net::LDAP::Server';
-use fields qw(store);
+use fields qw(store root_dn root_pw);
 
 use Carp;
 use Net::LDAP::LDIF;
-use Scalar::Util qw{blessed};
+use Net::LDAP::Util qw{canonical_dn};
+use Scalar::Util qw{blessed reftype looks_like_number};
 use UNIVERSAL::isa;
 
-use version; our $VERSION = qv('0.0.10');
+use Data::Dumper;
+
+use version; our $VERSION = qv('0.0.12');
+
+my %_ldap_cache = ();
+
+sub _get_ldap_constant {
+    my $code = shift;
+    return $code if looks_like_number($code);
+    return $_ldap_cache{$code} if exists $_ldap_cache{$code};
+    return $_ldap_cache{$code} = eval qq{
+        use Net::LDAP::Constant qw|$code|;
+        $code;
+    };
+}
+
+sub _make_result {
+    my $code = shift;
+    my $dn   = shift || '';
+    my $msg  = shift || '';
+
+    return {
+        matchedDN    => $dn,
+        errorMessage => $msg,
+        resultCode   => _get_ldap_constant($code),
+    };
+}
 
 sub new {
-    my $class = shift;
-    my $store = shift;
-    my $self  = $class->SUPER::new(@_);
+    my $class  = shift;
+    my $params = shift;
+    my $self   = $class->SUPER::new(@_);
 
-    croak 'Must pass store!' unless $store;
-    croak 'Not an object!'   unless blessed($store);
+    croak 'First parameter must be an ARRAYREF'
+      unless reftype($params) eq 'HASH';
+
+    croak 'Must pass store!' unless exists $params->{store};
+    croak 'Not an object!'   unless blessed( $params->{store} );
     croak 'Not a LDIFStore!'
-      unless $store->isa('Net::LDAP::SimpleServer::LDIFStore');
+      unless $params->{store}->isa('Net::LDAP::SimpleServer::LDIFStore');
 
-    #printf "Accepted connection from: %s\n", $sock->peerhost();
-    $self->{store} = $store;
+    croak 'Must pass root_dn!' unless exists $params->{root_dn};
+
+    #my $canon_dn;
+    croak 'Invalid root DN'
+      unless my $canon_dn = canonical_dn( $params->{root_dn} );
+
+    $self->{store}   = $params->{store};
+    $self->{root_dn} = $canon_dn;
+    $self->{root_pw} = $params->{root_pw} || '';
+    chomp( $self->{root_pw} );
 
     return $self;
+}
+
+sub bind {
+
+    #    my $r = _bind(@_);
+    #    print STDERR q{response = } . Dumper($r);
+    #    return $r;
+    #}
+    #
+    #sub _bind {
+    my ( $self, $request ) = @_;
+
+    #print STDERR '=' x 70 . "\n";
+    #print STDERR Dumper($request);
+    my $ok = _make_result(qw/LDAP_SUCCESS/);
+    return $ok unless $request->{name};
+
+    #print STDERR qq{not anonymous\n};
+    return _make_result(qw/LDAP_AUTH_UNKNOWN/)
+      unless exists $request->{authentication}->{simple};
+
+    #print STDERR qq{is simple authentication\n};
+    return _make_result(qw/LDAP_INVALID_CREDENTIALS/)
+      unless my $binddn = canonical_dn( $request->{name} );
+
+    #print STDERR qq#binddn is ok ($request->{name}) => ($binddn)\n#;
+    #print STDERR qq#handler dn is $self->{root_dn}\n#;
+    return _make_result(qw/LDAP_INVALID_CREDENTIALS/)
+      unless uc($binddn) eq uc( $self->{root_dn} );
+
+    #print STDERR qq{binddn is good\n};
+    my $bindpw = $request->{authentication}->{simple};
+    chomp($bindpw);
+
+    #print STDERR qq|comparing ($bindpw) eq ($self->{root_pw})\n|;
+    return _make_result(qw/LDAP_INVALID_CREDENTIALS/)
+      unless $bindpw eq $self->{root_pw};
+
+    return $ok;
 }
 
 1;    # Magic true value required at end of module
@@ -41,9 +117,13 @@ Net::LDAP::SimpleServer::ProtocolHandler - LDAP protocol handler used with C<Net
 
     use Net::LDAP::SimpleServer::ProtocolHandler;
 
-    my $store = Net::LDAP::SimpleServer::LDIFStore->new( $datafile );
+    my $store = Net::LDAP::SimpleServer::LDIFStore->new($datafile);
     my $handler =
-      Net::LDAP::SimpleServer::ProtocolHandler->new( $store, $socket );
+      Net::LDAP::SimpleServer::ProtocolHandler->new({
+          store   => $datafile,
+          root_dn => 'cn=root',
+          root_pw => 'somepassword'
+      }, $socket );
 
 =head1 DESCRIPTION
 
@@ -55,15 +135,23 @@ is available.
 
 =over
 
-=item new( STORE, OPTIONS )
+=item new( OPTIONS, IOHANDLES )
 
 Creates a new handler for the LDAP protocol, using STORE as the backend
-where the directory data is stored. The rest of the OPTIONS are the same
+where the directory data is stored. The rest of the IOHANDLES are the same
 as in the L<Net::LDAP::Server> module.
 
 =back
 
 =head1 METHODS
+
+=over
+
+=item bind( REQUEST )
+
+Handles a bind REQUEST from the LDAP client.
+
+=back
 
 =for head1 DIAGNOSTICS
 
@@ -93,13 +181,21 @@ Net::LDAP::SimpleServer::ProtocolHandler requires no configuration files or envi
 
 =head1 DEPENDENCIES
 
-L<< UNIVERSAL::isa >>
+L<< common::sense >>
 
-L<< Scalar::Util >>
+L<< Net::LDAP::Server >>
+
+L<< Carp >>;
 
 L<< Net::LDAP::LDIF >>
 
-L<< Net::LDAP::Server >>
+L<< Net::LDAP::Util >>
+
+L<< Scalar::Util >>
+
+L<< UNIVERSAL::isa >>
+
+L<< Net::LDAP::Constant >>
 
 =head1 INCOMPATIBILITIES
 

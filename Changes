@@ -1,5 +1,16 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.11  [2010.11.14 11:43:03] Net::LDAP::SimpleServer DIST VERSION 0.0.11
+======= ======================================================================
+ab18ca8 some debug support + one more test
+801b930 minor cosmetic change
+9c5b6d3 t/03.param.t revamped
+dbded61 added common::sense and IO::Pipe
+de7f2c7 Added configuration for port 20389, to allow non-root tests
+b67da4d Bumped version to 0.0.11
+2ea4161 added t/04.bind.t
+17db48c Fixed root_id => root_dn in POD docs
+
 0.0.10  [2010.11.08 19:33:29] Net::LDAP::SimpleServer DIST VERSION 0.0.10
 ======= ==============================================================================
 ef0f769 if needed creates directory for log_file and pid_file

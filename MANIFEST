@@ -15,6 +15,7 @@ t/01.load.store.t
 t/02.handler.t
 t/02.store.t
 t/03.param.t
+t/04.bind.t
 t/perlcritic.t
 t/pod-coverage.t
 t/pod.t
