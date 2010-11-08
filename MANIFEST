@@ -1,6 +1,8 @@
 Build.PL
 Changes
-examples/test1.ldif
+examples/empty.conf
+examples/single-entry.conf
+examples/single-entry.ldif
 lib/Net/LDAP/SimpleServer/LDIFStore.pm
 lib/Net/LDAP/SimpleServer.pm
 lib/Net/LDAP/SimpleServer/ProtocolHandler.pm
@@ -12,6 +14,7 @@ t/01.load.handler.t
 t/01.load.store.t
 t/02.handler.t
 t/02.store.t
+t/03.param.t
 t/perlcritic.t
 t/pod-coverage.t
 t/pod.t
