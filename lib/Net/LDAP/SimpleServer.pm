@@ -52,9 +52,9 @@ sub default_values {
         proto        => 'tcp',
         root_dn      => 'cn=root',
         root_pw      => 'ldappw',
+        conf_file    => DEFAULT_CONFIG_FILE,
         syslog_ident => 'Net::LDAP::SimpleServer-'
           . $Net::LDAP::SimpleServer::VERSION,
-        conf_file => DEFAULT_CONFIG_FILE,
     };
 }
 
