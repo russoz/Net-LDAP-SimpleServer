@@ -1,5 +1,10 @@
 Revision history for Net-LDAP-SimpleServer
 
+0.0.12  [2010.11.15 15:41:39] Net::LDAP::SimpleServer DIST VERSION 0.0.12
+======= ======================================================================
+f305dca Bumped version to 0.0.12
+9d1b1a4 Fixed root_id => root_dn in POD docs
+
 0.0.11  [2010.11.14 11:43:03] Net::LDAP::SimpleServer DIST VERSION 0.0.11
 ======= ======================================================================
 ab18ca8 some debug support + one more test
