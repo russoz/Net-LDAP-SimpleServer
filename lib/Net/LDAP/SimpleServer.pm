@@ -34,6 +34,8 @@ use constant LOGDIR  => File::Spec->catfile( BASEDIR, 'log' );
 use constant DEFAULT_CONFIG_FILE => File::Spec->catfile( BASEDIR, 'config' );
 use constant DEFAULT_DATA_FILE => File::Spec->catfile( BASEDIR, 'server.ldif' );
 
+make_path(LOGDIR);
+
 my $_add_option = sub {
     my ( $template, $prop, $opt, $initial ) = @_;
 
