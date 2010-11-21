@@ -106,6 +106,15 @@ sub bind {
     return $ok;
 }
 
+sub search {
+    my ( $self, $request ) = @_;
+
+    print STDERR '=' x 70 . "\n";
+    print STDERR Dumper($request);
+
+    return _make_result(qw/LDAP_SUCCESS/);
+}
+
 1;    # Magic true value required at end of module
 __END__
 
@@ -150,6 +159,10 @@ as in the L<Net::LDAP::Server> module.
 =item bind( REQUEST )
 
 Handles a bind REQUEST from the LDAP client.
+
+=item search( REQUEST )
+
+Performs a search in the data store
 
 =back
 
