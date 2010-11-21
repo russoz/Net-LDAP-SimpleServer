@@ -84,7 +84,7 @@ run_fork {
         my $s = Net::LDAP::SimpleServer->new();
 
         # run server
-        diag('Starting Net::LDAP::SimpleServer server');
+        diag('Starting Net::LDAP::SimpleServer [Fork]');
         $s->run(
             {
                 port      => TESTPORT,

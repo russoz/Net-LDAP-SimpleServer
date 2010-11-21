@@ -27,7 +27,7 @@ sub _eval_param {
                 # work with Net::Server, thus we pass them in run()
                 my $s = Net::LDAP::SimpleServer->new();
 
-                diag('Starting Net::LDAP::SimpleServer');
+                diag('Starting Net::LDAP::SimpleServer [Fork]');
                 $s->run(@a);
             };
 
