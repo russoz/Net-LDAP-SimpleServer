@@ -31,6 +31,7 @@ sub load {
 
     $self->{ldifobj} = _open_ldif($param);
     $self->{list}    = _load_ldif( $self->{ldifobj} );
+    return;
 }
 
 sub ldif {

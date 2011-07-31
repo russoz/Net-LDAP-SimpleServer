@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 use Net::LDAP::SimpleServer::ProtocolHandler;
@@ -23,6 +23,7 @@ diag("Testing the constructor params for ProtocolHandler\n");
 
 my $store =
   Net::LDAP::SimpleServer::LDIFStore->new('examples/single-entry.ldif');
+isa_ok( $store, 'Net::LDAP::SimpleServer::LDIFStore' );
 my $in  = *STDIN{IO};
 my $out = *STDOUT{IO};
 

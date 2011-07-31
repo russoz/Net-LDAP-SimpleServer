@@ -1,5 +1,8 @@
 package Net::LDAP::SimpleServer::ProtocolHandler;
 
+use strict;
+use warnings;
+
 use common::sense;
 
 # ABSTRACT: LDAP protocol handler used with Net::LDAP::SimpleServer
@@ -24,10 +27,12 @@ sub _get_ldap_constant {
     my $code = shift;
     return $code if looks_like_number($code);
     return $_ldap_cache{$code} if exists $_ldap_cache{$code};
+    ## no critic
     return $_ldap_cache{$code} = eval qq{
         use Net::LDAP::Constant qw|$code|;
         $code;
     };
+    ## use critic
 }
 
 sub _make_result {
@@ -69,7 +74,7 @@ sub new {
     return $self;
 }
 
-sub bind {
+sub bind {    ## no critic
 
     #    my $r = _bind(@_);
     #    print STDERR q{response = } . Dumper($r);

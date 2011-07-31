@@ -17,7 +17,7 @@ sub import {
     $personality = shift || 'Fork';
 
     use Net::Server;
-    eval "use base qw{Net::Server::$personality}";
+    eval "use base qw{Net::Server::$personality}";    ## no critic
     croak $@ if $@;
 
     @Net::LDAP::SimpleServer::ISA = qw(Net::Server);
@@ -25,6 +25,7 @@ sub import {
     #use Data::Dumper;
     #print STDERR Data::Dumper->Dump( [ \@Net::LDAP::SimpleServer::ISA ],
     #    ['ISA'] );
+    return;
 }
 
 use File::Basename;
@@ -35,10 +36,12 @@ use Scalar::Util qw{reftype};
 use Net::LDAP::SimpleServer::LDIFStore;
 use Net::LDAP::SimpleServer::ProtocolHandler;
 
+## no critic
 use constant BASEDIR => File::Spec->catfile( home(),  '.ldapsimpleserver' );
 use constant LOGDIR  => File::Spec->catfile( BASEDIR, 'log' );
 use constant DEFAULT_CONFIG_FILE => File::Spec->catfile( BASEDIR, 'config' );
 use constant DEFAULT_DATA_FILE => File::Spec->catfile( BASEDIR, 'server.ldif' );
+## use critic
 
 make_path(LOGDIR);
 
@@ -62,6 +65,7 @@ sub options {
 
     #use Data::Dumper;
     #print STDERR Data::Dumper->Dump( [$self], ['options_END'] );
+    return;
 }
 
 sub default_values {
@@ -90,6 +94,7 @@ sub _make_dir {
     return if -d $dir;
 
     make_path($dir);
+    return;
 }
 
 sub post_configure_hook {
@@ -110,6 +115,7 @@ sub post_configure_hook {
     $prop->{store} =
          Net::LDAP::SimpleServer::LDIFStore->new( $prop->{ldap_data} )
       || croak q{Cannot create data store!};
+    return;
 }
 
 sub process_request {
