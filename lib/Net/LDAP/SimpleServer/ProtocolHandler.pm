@@ -2,6 +2,10 @@ package Net::LDAP::SimpleServer::ProtocolHandler;
 
 use common::sense;
 
+# ABSTRACT: LDAP protocol handler used with Net::LDAP::SimpleServer
+
+# VERSION
+
 use Net::LDAP::Server;
 use base 'Net::LDAP::Server';
 use fields qw(store root_dn root_pw);
@@ -13,8 +17,6 @@ use Scalar::Util qw{blessed reftype looks_like_number};
 use UNIVERSAL::isa;
 
 use Data::Dumper;
-
-use version; our $VERSION = qv('0.0.12');
 
 my %_ldap_cache = ();
 
@@ -120,7 +122,6 @@ __END__
 
 =head1 NAME
 
-Net::LDAP::SimpleServer::ProtocolHandler - LDAP protocol handler used with C<Net::LDAP::SimpleServer>
 
 =head1 SYNOPSIS
 
@@ -140,7 +141,7 @@ This module provides an interface between Net::LDAP::SimpleServer and the
 underlying data store. Currently only L<Net::LDAP::SimpleServer::LDIFStore>
 is available.
 
-=head1 CONSTRUCTOR 
+=head1 CONSTRUCTOR
 
 =over
 
@@ -189,7 +190,7 @@ Performs a search in the data store
     files, and the meaning of any environment variables or properties
     that can be set. These descriptions must also include details of any
     configuration language used.
-  
+
 Net::LDAP::SimpleServer::ProtocolHandler requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
@@ -216,7 +217,7 @@ None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-This store does not yet support writing to a LDIF file, which makes the 
+This store does not yet support writing to a LDIF file, which makes the
 C<< Net::LDAP::SimpleServer >> a read-only server.
 
 No bugs have been reported.
