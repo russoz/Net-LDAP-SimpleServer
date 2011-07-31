@@ -15,8 +15,6 @@ use constant TESTROOTPW => 'testpw';
 #sub diag { print STDERR @_; }
 
 sub ldapconnect {
-
-    #diag( 'Connecting to server ' . TESTHOST . ':' . TESTPORT );
     return Net::LDAP->new( TESTHOST, port => TESTPORT );
 }
 
@@ -24,48 +22,38 @@ sub run_test {
     my $mesg = undef;
 
     my $ldap = ldapconnect();
-
-    #print STDERR 'ldap :: ' . Dumper($ldap);
     ok($ldap);
 
     diag('Performing an anonymous bind');
     $mesg = $ldap->bind;
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     $mesg = $ldap->unbind;
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     diag('Performing an authenticated bind');
     $ldap = ldapconnect();
     $mesg = $ldap->bind( TESTROOTDN, password => TESTROOTPW );
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     $mesg = $ldap->unbind;
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     diag('Performing an authenticated bind, upper case DN');
     $ldap = ldapconnect();
     $mesg = $ldap->bind( uc(TESTROOTDN), password => TESTROOTPW );
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     $mesg = $ldap->unbind;
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
     diag('Performing an authenticated bind with wrong password');
     $ldap = ldapconnect();
     $mesg = $ldap->bind( TESTROOTDN, password => 'some-wrong-password' );
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( $mesg->code );
+    ok( $mesg->code, $mesg->error_desc );
 
     $mesg = $ldap->unbind;
-    diag( $mesg->error_desc ) if $mesg->code;
-    ok( !$mesg->code );
+    ok( !$mesg->code, $mesg->error_desc );
 
 }
 

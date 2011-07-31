@@ -27,7 +27,6 @@ sub _eval_param {
                 # work with Net::Server, thus we pass them in run()
                 my $s = Net::LDAP::SimpleServer->new();
 
-                diag('Starting Net::LDAP::SimpleServer [Fork]');
                 $s->run(@a);
             };
 
@@ -45,7 +44,6 @@ sub _eval_param {
 
 diag('Testing the constructor params for SimpleServer');
 
-# ===========================================================================
 # expect failure
 ok( !_eval_param() );
 ok( !_eval_param( {} ) );
