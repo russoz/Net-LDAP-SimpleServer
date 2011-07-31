@@ -7,6 +7,7 @@ use warnings;
 
 # VERSION
 
+use 5.008;
 use Carp;
 use common::sense;
 

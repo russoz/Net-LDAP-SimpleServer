@@ -8,7 +8,8 @@ use diagnostics;
 
 # VERSION
 
-use Carp;
+use 5.010;
+use Carp qw/carp croak/;
 use UNIVERSAL::isa;
 use Scalar::Util qw(blessed reftype);
 use Net::LDAP::LDIF;
