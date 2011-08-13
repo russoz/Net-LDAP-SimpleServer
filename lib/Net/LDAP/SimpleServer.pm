@@ -32,7 +32,7 @@ sub import {
 use File::Basename;
 use File::HomeDir;
 use File::Spec;
-use File::Path qw{make_path};
+use File::Path 2.08 qw{make_path};
 use Scalar::Util qw{reftype};
 use Net::LDAP::SimpleServer::LDIFStore;
 use Net::LDAP::SimpleServer::ProtocolHandler;
