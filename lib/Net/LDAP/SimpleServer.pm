@@ -131,7 +131,7 @@ sub process_request {
 
     until ( $handler->handle ) {
 
-        # empty loop
+        # intentionally empty loop
     }
     return;
 }
@@ -141,8 +141,6 @@ sub process_request {
 __END__
 
 =head1 SYNOPSIS
-
-B<< WORK IN PROGRESS!! NOT READY TO USE YET!! >>
 
     package MyServer;
 
@@ -174,46 +172,30 @@ The default configuration file is:
 
 =head1 DESCRIPTION
 
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
-
 As the name suggests, this module aims to implement a simple LDAP server,
 using many components already available in CPAN. It can be used for
 prototyping and/or development purposes. This is B<NOT> intended to be a
 production-grade server, altough some brave souls in small offices might
 use it as such.
 
-As of November 2010, the server will simply load a LDIF file and serve its
+As of April 2010, the server will load a LDIF file and serve its
 contents through the LDAP protocol. Many operations are B<NOT> available yet,
-notably writing into the directory tree, but we would like to implement that
-in a near future.
+notably writing into the directory tree.
 
+The constructors will follow the rules defined by L<Net::Server>, but the most
+useful are the two forms described below.
 
-=head1 CONSTRUCTOR
-
-The constructors will follow the rules defined by L<Net::Server>, but most
-notably we have the two forms below:
-
-=over
-
-=item new()
+=method new()
 
 Attempts to create a server by using the default configuration file,
 C<< ${HOME}/.ldapsimpleserver/config >>.
 
-=item new( HASHREF )
+=method new( HASHREF )
 
 Attempts to create a server by using the options specified in a hash
 reference rather than reading them from a configuration file.
 
-=back
-
-=head1 METHODS
-
-=over
-
-=item options()
+=method options()
 
 As specified in L<Net::Server>, this method creates new options for the,
 server, namely:
@@ -228,7 +210,7 @@ root_pw - the password for root_dn
 
 =back
 
-=item default_values()
+=method default_values()
 
 As specified in L<Net::Server>, this method provides default values for a
 number of options. In Net::LDAP::SimpleServer, this method is defined as:
@@ -250,49 +232,17 @@ Notice that we do set a default password for the C<< cn=root >> DN. This
 allows for out-of-the-box testing, but make sure you change the password
 when putting this to production use.
 
-=item post_configure_hook()
+=method post_configure_hook()
 
 Method specified by L<Net::Server> to validate the passed options
 
-=item process_request()
+=method process_request()
 
 Method specified by L<Net::Server> to actually handle one connection. In this
 module it basically delegates the processing to
 L<Net::LDAP::SimpleServer::ProtocolHandler>.
 
-=back
-
-=head1 DIAGNOSTICS
-
-=for author to fill in:
-    List every single error and warning message that the module can
-    generate (even the ones that will "never happen"), with a full
-    explanation of each problem, one or more likely causes, and any
-    suggested remedies.
-
-=over
-
-=item C<< Error message here, perhaps with %s placeholders >>
-
-[Description of error here]
-
-=item C<< Another error message here >>
-
-[Description of error here]
-
-[Et cetera, et cetera]
-
-=back
-
-
 =head1 CONFIGURATION AND ENVIRONMENT
-
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
 
 Net::LDAP::SimpleServer may use a configuration file to specify the
 server settings. If no file is specified and options are not passed
@@ -308,32 +258,5 @@ C<< ${HOME}/.ldapsimpleserver/config >>.
     #user_id_attr uid
     #user_pw_attr password
 
-
-=head1 DEPENDENCIES
-
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
-
-L<< Net::LDAP >>
-
-L<< Net::LDAP::Server >>
-
-L<< Net::Server >>
-
-L<< UNIVERSAL::isa >>
-
-L<< Carp >>
-
-L<< File::HomeDir >>
-
-L<< File::Spec::Functions >>
-
-L<< Scalar::Util >>
-
-L<< Config::General >>
-
-L<< Net::LDAP::SimpleServer::LDIFStore >>
+=cut
 

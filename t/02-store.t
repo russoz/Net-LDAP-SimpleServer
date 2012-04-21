@@ -1,4 +1,4 @@
-use Test::More tests => 3;
+use Test::More tests => 6;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 
@@ -28,4 +28,10 @@ check_param_failure('name/of/a/file/that/will/never/ever/exist.ldif');
 $obj =
   new_ok( 'Net::LDAP::SimpleServer::LDIFStore',
     ['examples/single-entry.ldif'] );
+
+my $list = $obj->list;
+ok( $list, 'Returns a list' );
+is( ref($list), 'ARRAY', 'The list is an array-reference' );
+my @list = @{$list};
+is( scalar(@list), 1, 'the list contains one element' );
 
