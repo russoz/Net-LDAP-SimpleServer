@@ -2,7 +2,6 @@ package Net::LDAP::SimpleServer::LDIFStore;
 
 use strict;
 use warnings;
-use diagnostics;
 
 # ABSTRACT: Data store to support Net::LDAP::SimpleServer
 
