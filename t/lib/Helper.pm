@@ -10,16 +10,15 @@ use IO::Pipe;
 use Net::LDAP;
 use Net::LDAP::SimpleServer;
 
-my $default_test_port = 30389;
+my $default_test_port   = 30389;
 my $default_start_delay = 5;
-my $default_end_signal = 3;
+my $default_end_signal  = 3;
 
-my $server_fixed_opts = { 
-	log_file => '/tmp/ldapserver.log', 
-	port     => $default_test_port,
-	host     => 'localhost',
+my $server_fixed_opts = {
+    log_file => '/tmp/ldapserver.log',
+    port     => $default_test_port,
+    host     => 'localhost',
 };
-
 
 ##############################################################################
 
@@ -46,10 +45,11 @@ sub _eval_params {
             local $SIG{ALRM} = sub { quit($OK) };
             alarm $alarm_wait;
 
+            diag( "Starting server on port: " . $default_test_port );
             eval {
                 use Net::LDAP::SimpleServer;
 
-                my $s = Net::LDAP::SimpleServer->new( $server_fixed_opts );
+                my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
                 $s->run($p);
             };
             quit( $NOK . $@ );
@@ -96,36 +96,39 @@ sub ldap_client {
 }
 
 sub test_requests {
-	my $opts = ref $_[0] eq 'HASH' ? $_[0] : { @_ };
+    my $opts = ref $_[0] eq 'HASH' ? $_[0] : {@_};
 
-    my $requests_sub = $opts->{requests_sub} || croak "Must pass 'requests_sub'";
-    my $server_opts  = $opts->{server_opts} || croak "Must pass 'server_opts'";
+    my $requests_sub = $opts->{requests_sub}
+      || croak "Must pass 'requests_sub'";
+    my $server_opts = $opts->{server_opts} || croak "Must pass 'server_opts'";
 
     my $start_delay = $opts->{start_delay} || $default_start_delay;
-    my $end_signal  = $opts->{end_signal} || $default_end_signal;
+    my $end_signal  = $opts->{end_signal}  || $default_end_signal;
 
-	run_fork {
-	    parent {
-	        my $child = shift;
+    run_fork {
+        parent {
+            my $child = shift;
 
-	        # give the server some time to start
-	        sleep $start_delay;
+            # give the server some time to start
+            sleep $start_delay;
 
-	        # run client
-	        diag('Net::LDAP::SimpleServer Testing         [Knive]');
-        	$requests_sub->();
-	        
-	        kill $end_signal, $child;
-	    }
-	    child {
-	        diag('Net::LDAP::SimpleServer Instantiating    [Fork]');
-	        my $s = Net::LDAP::SimpleServer->new( $server_fixed_opts );
+            # run client
+            diag('Net::LDAP::SimpleServer Testing         [Knive]');
+            $requests_sub->();
 
-	        # run server
-	        diag('Net::LDAP::SimpleServer Starting         [Fork]');
-	        $s->run( $server_opts );
-	        diag('Net::LDAP::SimpleServer Server stopped   [Fork]');
-			diag('There is no                             [Spoon]');
-	    }
-	};
+            kill $end_signal, $child;
+        }
+        child {
+            diag('Net::LDAP::SimpleServer Instantiating    [Fork]');
+            my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
+
+            # run server
+            diag(   'Net::LDAP::SimpleServer Starting :'
+                  . $default_test_port
+                  . '  [Fork]' );
+            $s->run($server_opts);
+            diag('Net::LDAP::SimpleServer Server stopped   [Fork]');
+            diag('There is no                             [Spoon]');
+        }
+    };
 }

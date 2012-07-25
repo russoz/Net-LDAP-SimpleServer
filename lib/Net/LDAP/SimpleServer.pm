@@ -38,6 +38,7 @@ use Net::LDAP::SimpleServer::ProtocolHandler;
 my $BASEDIR             = File::Spec->catfile( home(),   '.ldapsimple' );
 my $DEFAULT_CONFIG_FILE = File::Spec->catfile( $BASEDIR, 'server.conf' );
 my $DEFAULT_DATA_FILE   = File::Spec->catfile( $BASEDIR, 'server.ldif' );
+my $DEFAULT_LOG_FILE    = File::Spec->catfile( $BASEDIR, 'server.log' );
 
 my @LDAP_PRIVATE_OPTIONS = ( 'store', 'input', 'output' );
 my @LDAP_PUBLIC_OPTIONS = ( 'data_file', 'root_dn', 'root_pw', 'allow_anon' );
@@ -67,7 +68,7 @@ sub default_values {
 
     my $v = {};
     $v->{port}      = 389;
-    $v->{log_file}  = File::Spec->catfile( $BASEDIR, 'server.log' );
+    $v->{log_file}  = $DEFAULT_LOG_FILE;
     $v->{conf_file} = $DEFAULT_CONFIG_FILE if -r $DEFAULT_CONFIG_FILE;
     $v->{syslog_ident} =
       'Net::LDAP::SimpleServer [' . $Net::LDAP::SimpleServer::VERSION . ']';
@@ -88,8 +89,6 @@ sub post_configure_hook {
     make_path($BASEDIR);
 
     #use Data::Dumper; print STDERR '# ' . Dumper( $prop );
-    croak q{Cannot read configuration file (} . $prop->{conf_file} . q{)}
-      if ( $prop->{conf_file} && !-r $prop->{conf_file} );
     croak q{Configuration has no "data_file" file!}
       unless $prop->{data_file};
     croak qq{Cannot read data_file file (} . $prop->{data_file} . q{)}
@@ -150,9 +149,8 @@ __END__
     # make it spin
     $server->run();
 
-The default configuration file is:
-
-    ${HOME}/.ldapsimpleserver/config
+    # make it spin with options
+    $server->run({ allow_anon => 0 });
 
 =head1 DESCRIPTION
 
@@ -169,48 +167,46 @@ notably writing into the directory tree.
 The constructors will follow the rules defined by L<Net::Server>, but the most
 useful are the two forms described below.
 
+C<Net::LDAP::SimpleServer> will use the directory C<< ${HOME}/.ldapsimple >>
+as a C<BASEDIR> for server files. If there exists a file:
+
+    BASEDIR/server.conf
+
+it will be used as the default confguration file. Similarly, if there exists
+a file:
+
+    BASEDIR/server.ldif
+
+it will be used as the default data file for this server.
+
 =method new()
 
-Attempts to create a server by using the default configuration file,
-C<< ${HOME}/.ldapsimpleserver/config >>.
+Instantiates a server object. If the default configuration file is available,
+the options in it will be used.
 
 =method new( HASHREF )
 
-Attempts to create a server by using the options specified in a hash
-reference rather than reading them from a configuration file.
+Instantiates a server object using the options specified in a hash
+reference.
 
 =method options()
 
 As specified in L<Net::Server>, this method creates new options for the,
 server, namely:
 
-=over
+=begin :list
 
-data_file - the LDIF data file used by LDIFStore
+* data_file - the LDIF data file used by LDIFStore
+* root_dn - the administrator DN of the repository
+* root_pw - the password for root_dn
+* allow_anon - whether to allow for anonymous binds
 
-root_dn - the administrator DN of the repository
-
-root_pw - the password for root_dn
-
-=back
+=end :list
 
 =method default_values()
 
 As specified in L<Net::Server>, this method provides default values for a
-number of options. In Net::LDAP::SimpleServer, this method is defined as:
-
-    sub default_values {
-        return {
-            host         => '*',
-            port         => 389,
-            proto        => 'tcp',
-            root_dn      => 'cn=root',
-            root_pw      => 'ldappw',
-            syslog_ident => 'Net::LDAP::SimpleServer-'
-                . $Net::LDAP::SimpleServer::VERSION,
-            conf_file => $DEFAULT_CONFIG_FILE,
-        };
-    }
+number of options.
 
 Notice that we do set a default password for the C<< cn=root >> DN. This
 allows for out-of-the-box testing, but make sure you change the password
@@ -218,7 +214,8 @@ when putting this to production use.
 
 =method post_configure_hook()
 
-Method specified by L<Net::Server> to validate the passed options
+Method specified by L<Net::Server> to validate the parameters used in the
+server instance.
 
 =method process_request()
 
@@ -231,16 +228,25 @@ L<Net::LDAP::SimpleServer::ProtocolHandler>.
 Net::LDAP::SimpleServer may use a configuration file to specify the
 server settings. If no file is specified and options are not passed
 in a hash, this module will look for a default configuration file named
-C<< ${HOME}/.ldapsimpleserver/config >>.
+C<< BASEDIR/server.conf >>.
 
     data_file /path/to/a/ldif/file.ldif
     #port 389
     #root_dn cn=root
     #root_pw somepassword
+
+=cut
+
+=head1 TODO
+
+We plan to implement more options in Net::LDAP::SimpleServer. Some ideas are:
+
     #objectclass_req (true|false)
     #user_tree dc=some,dc=subtree,dc=com
     #user_id_attr uid
     #user_pw_attr password
+
+Keeping in mind we do NOT want to implement a full blown LDAP server.
 
 =cut
 

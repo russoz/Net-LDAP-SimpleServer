@@ -52,9 +52,9 @@ sub new {
     croak 'Invalid root DN'
       unless my $canon_dn = canonical_dn( $params->{root_dn} );
 
-    $self->{store}   = $params->{store};
-    $self->{root_dn} = $canon_dn;
-    $self->{root_pw} = $params->{root_pw};
+    $self->{store}      = $params->{store};
+    $self->{root_dn}    = $canon_dn;
+    $self->{root_pw}    = $params->{root_pw};
     $self->{allow_anon} = $params->{allow_anon};
     chomp( $self->{root_pw} );
 
@@ -71,7 +71,7 @@ sub unbind {
     return _make_result(LDAP_SUCCESS);
 }
 
-sub bind {    ## no critic
+sub bind {    ## no critic (ProhibitBuiltinHomonyms)
     my ( $self, $request ) = @_;
 
     #print STDERR '=' x 70 . "\n";
@@ -79,7 +79,10 @@ sub bind {    ## no critic
     #print STDERR Dumper($request);
     my $ok = _make_result(LDAP_SUCCESS);
 
-    if( not $request->{name} and exists $request->{authentication}->{simple} and $self->{allow_anon} ) {
+    if (    not $request->{name}
+        and exists $request->{authentication}->{simple}
+        and $self->{allow_anon} )
+    {
         return $ok;
     }
 
@@ -161,13 +164,13 @@ Creates a new handler for the LDAP protocol, using STORE as the backend
 where the directory data is stored. The rest of the IOHANDLES are the same
 as in the L<Net::LDAP::Server> module.
 
-=method unbind()
-
-Unbinds the connection to the server.
-
 =method bind( REQUEST )
 
 Handles a bind REQUEST from the LDAP client.
+
+=method unbind()
+
+Unbinds the connection to the server.
 
 =method search( REQUEST )
 
