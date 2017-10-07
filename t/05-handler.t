@@ -1,22 +1,21 @@
+use strict;
+use warnings;
 use Test::More tests => 9;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 use Net::LDAP::SimpleServer::ProtocolHandler;
 
 sub _check_param {
-    my @p = @_;
-    eval { my $o = Net::LDAP::SimpleServer::ProtocolHandler->new(@p); };
+    eval { my $o = Net::LDAP::SimpleServer::ProtocolHandler->new(@_); };
     return $@;
 }
 
 sub check_param_success {
-    my $p = _check_param(@_);
-    ok( not $p );
+    ok( not _check_param(@_) );
 }
 
 sub check_param_failure {
-    my $p = _check_param(@_);
-    ok($p);
+    ok(_check_param(@_));
 }
 
 diag("Testing the constructor params for ProtocolHandler\n");
@@ -29,10 +28,7 @@ my $out = *STDOUT{IO};
 
 my $obj = new_ok(
     'Net::LDAP::SimpleServer::ProtocolHandler',
-    [
-        { store => $store, root_dn => 'cn=root', root_pw => 'somepw', },
-        $in, $out
-    ]
+    [{ store => $store, root_dn => 'cn=root', root_pw => 'somepw', 'socket' => $in }],
 );
 
 check_param_failure();
