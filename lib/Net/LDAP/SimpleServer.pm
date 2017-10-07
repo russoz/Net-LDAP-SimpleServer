@@ -110,8 +110,7 @@ sub process_request {
     for (@LDAP_PRIVATE_OPTIONS) {
         $params->{$_} = $prop->{$_} if $prop->{$_};
     }
-    $params->{input}  = *STDIN{IO};
-    $params->{output} = *STDOUT{IO};
+    $params->{sock} = $self->{server}->{client};
     my $handler = Net::LDAP::SimpleServer::ProtocolHandler->new($params);
 
     until ( $handler->handle ) {

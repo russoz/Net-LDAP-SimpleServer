@@ -40,7 +40,7 @@ sub _make_result {
 sub new {
     my $class  = shift;
     my $params = shift || croak 'Must pass parameters!';
-    my $self   = $class->SUPER::new( $params->{input}, $params->{output} );
+    my $self   = $class->SUPER::new( $params->{sock} );
 
     croak 'Parameter must be a HASHREF' unless reftype($params) eq 'HASH';
     croak 'Must pass option {store}' unless exists $params->{store};
