@@ -7,8 +7,10 @@ use Helper qw(ldap_client test_requests);
 
 use Net::LDAP::Constant (
     qw/LDAP_SUCCESS LDAP_AUTH_UNKNOWN LDAP_INVALID_CREDENTIALS/,
-    qw/LDAP_AUTH_METHOD_NOT_SUPPORTED LDAP_INVALID_SYNTAX LDAP_NO_SUCH_OBJECT/ );
-use Net::LDAP::SimpleServer::Constant qw/SCOPE_BASEOBJ SCOPE_ONELEVEL SCOPE_SUBTREE/;
+    qw/LDAP_AUTH_METHOD_NOT_SUPPORTED LDAP_INVALID_SYNTAX LDAP_NO_SUCH_OBJECT/
+);
+use Net::LDAP::SimpleServer::Constant
+  qw/SCOPE_BASEOBJ SCOPE_ONELEVEL SCOPE_SUBTREE/;
 
 use Data::Dumper;
 
@@ -41,6 +43,7 @@ test_requests(
             base   => 'DC=net',
             filter => '(distinguishedname=' . $dn1 . ')'
         );
+
         #use Data::Dumper; diag( '\nAAA\n' . Dumper($mesg) . '\n\n');
         is( $mesg->code, LDAP_SUCCESS, $mesg->error_desc );
         @entries = $mesg->entries;

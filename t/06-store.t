@@ -10,11 +10,11 @@ sub _check_param {
 }
 
 sub check_param_success {
-    ok( not _check_param(@_));
+    ok( not _check_param(@_) );
 }
 
 sub check_param_failure {
-    ok( _check_param(@_));
+    ok( _check_param(@_) );
 }
 
 my $obj = undef;
