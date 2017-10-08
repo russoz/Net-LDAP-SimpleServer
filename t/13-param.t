@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More;
 
 use lib 't/lib';
 use Helper qw(server_ok server_nok);
@@ -10,7 +10,6 @@ server_nok( undef, 'should not work without parameters' );
 server_nok( {}, 'should not work with empty has as parameter' );
 
 # configuration file
-diag('Net::Server error below:');
 server_nok( { conf_file => '/no/such/file.conf' },
     'should not work with non-existing configuration file' );
 server_nok(
@@ -57,3 +56,4 @@ server_ok(
     'should work specifying different parameters'
 );
 
+done_testing();

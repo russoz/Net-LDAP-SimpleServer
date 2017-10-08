@@ -1,26 +1,21 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 
 sub _check_param {
-    my @p = @_;
-    eval { my $o = Net::LDAP::SimpleServer::LDIFStore->new(@p); };
+    eval { my $o = Net::LDAP::SimpleServer::LDIFStore->new(@_); };
     return $@;
 }
 
 sub check_param_success {
-    my $p = _check_param(@_);
-    ok( not $p );
+    ok( not _check_param(@_));
 }
 
 sub check_param_failure {
-    my $p = _check_param(@_);
-    ok($p);
+    ok( _check_param(@_));
 }
-
-diag("Testing the constructor params for LDIFStore\n");
 
 my $obj = undef;
 
@@ -37,3 +32,4 @@ is( ref($list), 'ARRAY', 'The list is an array-reference' );
 my @list = @{$list};
 is( scalar(@list), 1, 'the list contains one element' );
 
+done_testing();

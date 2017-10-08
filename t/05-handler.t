@@ -15,10 +15,8 @@ sub check_param_success {
 }
 
 sub check_param_failure {
-    ok(_check_param(@_));
+    ok( _check_param(@_) );
 }
-
-diag("Testing the constructor params for ProtocolHandler\n");
 
 my $store =
   Net::LDAP::SimpleServer::LDIFStore->new('examples/single-entry.ldif');
@@ -28,7 +26,14 @@ my $out = *STDOUT{IO};
 
 my $obj = new_ok(
     'Net::LDAP::SimpleServer::ProtocolHandler',
-    [{ store => $store, root_dn => 'cn=root', root_pw => 'somepw', 'socket' => $in }],
+    [
+        {
+            store   => $store,
+            root_dn => 'cn=root',
+            root_pw => 'somepw',
+            'sock'  => $in
+        }
+    ],
 );
 
 check_param_failure();

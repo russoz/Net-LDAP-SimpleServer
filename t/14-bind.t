@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More;
 
 use lib 't/lib';
 use Helper qw(ldap_client test_requests);
@@ -22,7 +22,6 @@ test_requests(
         my $ldap = ldap_client();
         ok( $ldap, 'should be able to connect' );
 
-        diag('Binding anonymously');
         $mesg = $ldap->bind;
         ok( !$mesg->code,
             'should be able to bind anonymously (' . $mesg->error_desc . ')' );
@@ -31,7 +30,6 @@ test_requests(
         ok( !$mesg->code,
             'should be able to unbind (' . $mesg->error_desc . ')' );
 
-        diag('Binding with authentication');
         $ldap = ldap_client();
         $mesg = $ldap->bind( $ROOT_DN, password => $ROOT_PW );
         ok( !$mesg->code,
@@ -43,7 +41,6 @@ test_requests(
         ok( !$mesg->code,
             'should be able to unbind (' . $mesg->error_desc . ')' );
 
-        diag('Upper case bind DN');
         $ldap = ldap_client();
         $mesg = $ldap->bind( uc($ROOT_DN), password => $ROOT_PW );
         ok( !$mesg->code,
@@ -55,7 +52,6 @@ test_requests(
         ok( !$mesg->code,
             'should be able to unbind (' . $mesg->error_desc . ')' );
 
-        diag('Wrong password -> no bind');
         $ldap = ldap_client();
         $mesg = $ldap->bind( $ROOT_DN, password => 'some-wrong-password' );
         ok( $mesg->code,
@@ -67,7 +63,6 @@ test_requests(
         ok( !$mesg->code,
             'should be able to unbind (' . $mesg->error_desc . ')' );
 
-        diag('Unsupported auth mechanism');
         $ldap = ldap_client();
         {
             use Authen::SASL;
@@ -101,14 +96,12 @@ test_requests(
         my $ldap = ldap_client();
         my $mesg = undef;
 
-        diag('Binding anonymously');
         $mesg = $ldap->bind;
         ok( $mesg->code, $mesg->error_desc );
 
         $mesg = $ldap->unbind;
         ok( !$mesg->code, $mesg->error_desc );
 
-        diag('Binding with authentication');
         $ldap = ldap_client();
         $mesg = $ldap->bind( $ROOT_DN, password => $ROOT_PW );
         ok( !$mesg->code,
@@ -120,3 +113,5 @@ test_requests(
         ok( !$mesg->code, $mesg->error_desc );
     },
 );
+
+done_testing();

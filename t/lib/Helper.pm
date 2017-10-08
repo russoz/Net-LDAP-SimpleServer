@@ -1,5 +1,7 @@
 # common routines for testing Net::LDAP::SimpleServer
 
+use strict;
+use warnings;
 use Exporter 'import';
 our @EXPORT_OK = qw(ldap_client test_requests server_ok server_nok);
 
@@ -45,7 +47,6 @@ sub _eval_params {
             local $SIG{ALRM} = sub { quit($OK) };
             alarm $alarm_wait;
 
-            diag( "Starting server on port: " . $default_test_port );
             eval {
                 use Net::LDAP::SimpleServer;
 
@@ -113,22 +114,23 @@ sub test_requests {
             sleep $start_delay;
 
             # run client
-            diag('Net::LDAP::SimpleServer Testing         [Knive]');
+            # diag('Net::LDAP::SimpleServer Testing         [Knive]');
             $requests_sub->();
 
             kill $end_signal, $child;
         }
         child {
-            diag('Net::LDAP::SimpleServer Instantiating    [Fork]');
+            # diag('Net::LDAP::SimpleServer Instantiating    [Fork]');
             my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
 
             # run server
-            diag(   'Net::LDAP::SimpleServer Starting :'
-                  . $default_test_port
-                  . '  [Fork]' );
+            # diag(   'Net::LDAP::SimpleServer Starting :'
+            #       . $default_test_port
+            #       . '  [Fork]' );
             $s->run($server_opts);
-            diag('Net::LDAP::SimpleServer Server stopped   [Fork]');
-            diag('There is no                             [Spoon]');
+
+            # diag('Net::LDAP::SimpleServer Server stopped   [Fork]');
+            # diag('There is no                             [Spoon]');
         }
     };
 }
