@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More;
 
 use Net::LDAP::SimpleServer::LDIFStore;
 use Net::LDAP::SimpleServer::ProtocolHandler;
@@ -45,3 +45,5 @@ check_param_failure(
     { store => $store, root_dn => 'root', root_pw => 'somepw' },
     $in, $out );
 check_param_failure('non/existent/file.ldif');
+
+done_testing();
