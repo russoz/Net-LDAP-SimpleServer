@@ -8,6 +8,7 @@ our @EXPORT_OK = qw(ldap_client test_requests server_ok server_nok);
 use Carp;
 use Proc::Fork;
 use IO::Pipe;
+use Try::Tiny;
 
 use Net::LDAP;
 use Net::LDAP::SimpleServer;
@@ -47,13 +48,15 @@ sub _eval_params {
             local $SIG{ALRM} = sub { quit($OK) };
             alarm $alarm_wait;
 
-            eval {
+            try {
                 use Net::LDAP::SimpleServer;
 
                 my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
                 $s->run($p);
-            };
-            quit( $NOK . $@ );
+            }
+            catch {
+                quit($NOK . $@);
+            }
         }
     };
 
@@ -110,14 +113,17 @@ sub test_requests {
         parent {
             my $child = shift;
 
-            # give the server some time to start
-            sleep $start_delay;
+            try {
+                # give the server some time to start
+                sleep $start_delay;
 
-            # run client
-            # diag('Net::LDAP::SimpleServer Testing         [Knive]');
-            $requests_sub->();
-
-            kill $end_signal, $child;
+                # run client
+                # diag('Net::LDAP::SimpleServer Testing         [Knive]');
+                $requests_sub->();
+            }
+            finally {
+                kill $end_signal, $child;
+            }
         }
         child {
             # diag('Net::LDAP::SimpleServer Instantiating    [Fork]');
