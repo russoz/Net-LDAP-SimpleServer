@@ -8,7 +8,7 @@ use warnings;
 # VERSION
 
 use Exporter 'import';
-our @EXPORT_OK = qw(SCOPE_BASEOBJ SCOPE_ONELEVEL SCOPE_SUBTREE);
+our @EXPORT = qw(SCOPE_BASEOBJ SCOPE_ONELEVEL SCOPE_SUBTREE);
 
 use constant SCOPE_BASEOBJ  => 0;
 use constant SCOPE_ONELEVEL => 1;
