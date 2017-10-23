@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-# PODNAME:  ldapd.pl
+# PODNAME:  simpleldap
 # ABSTRACT: Script to invoke the LDAP server.
 
 # VERSION
@@ -21,7 +21,7 @@ __END__
 
 =head1 SYNOPSIS
 
-	host:~ # ldapd.pl
+	host:~ # simpleldap
 
 =head1 DESCRIPTION
 
