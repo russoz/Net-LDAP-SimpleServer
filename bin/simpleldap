@@ -21,12 +21,13 @@ __END__
 
 =head1 SYNOPSIS
 
-	host:~ # simpleldap
+	$ simpleldap
 
 =head1 DESCRIPTION
 
 This script simply instantiates and executes a L<Net::LDAP::SimpleServer>
-server.
+server. Bear in mind that, by default, it will use port 389 (standard
+LDAP port), and being <1024, one needs to be root to open it.
 
 =cut
 
