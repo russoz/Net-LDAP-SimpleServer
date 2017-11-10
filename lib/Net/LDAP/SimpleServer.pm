@@ -20,10 +20,6 @@ sub import {
     croak $@ if $@;
 
     push @Net::LDAP::SimpleServer::ISA, qw(Net::Server);
-
-    #use Data::Dumper;
-    #print STDERR Data::Dumper->Dump( [ \@Net::LDAP::SimpleServer::ISA ],
-    #    ['ISA'] );
     return;
 }
 
@@ -165,9 +161,8 @@ prototyping and/or development purposes. This is B<NOT> intended to be a
 production-grade server, although some brave souls in small offices might
 use it as such.
 
-As of April 2010, the server will load a LDIF file and serve its
-contents through the LDAP protocol. Many operations are B<NOT> available yet,
-notably writing into the directory tree.
+The server will load a LDIF file and serve its contents through the LDAP
+protocol. Many operations are B<NOT> available yet, some will never be.
 
 The constructors will follow the rules defined by L<Net::Server>, but the most
 useful are the two forms described below.
@@ -196,8 +191,9 @@ reference.
 
 =method options()
 
-As specified in L<Net::Server>, this method creates new options for the,
-server, namely:
+As specified in L<Net::Server>, this method creates new options for the
+server. Hence, in addition to L<Net::Server> options, this module also
+allows setting the following parameters:
 
 =begin :list
 
@@ -205,6 +201,10 @@ server, namely:
 * root_dn - the administrator DN of the repository
 * root_pw - the password for root_dn
 * allow_anon - whether to allow for anonymous binds
+* user_filter - LDAP filter to find user entries
+* user_id_attr - attribute of a LDAP entry that contains the username
+* user_pw_attr - attribute of a LDAP entry that contains the password
+* user_passwords - whether to return password values in searches
 
 =end :list
 
@@ -215,7 +215,7 @@ number of options.
 
 Notice that we do set a default password for the C<< cn=root >> DN. This
 allows for out-of-the-box testing, but make sure you change the password
-when putting this to production use.
+when putting this to use.
 
 =method post_configure_hook()
 
@@ -248,10 +248,16 @@ We plan to implement more options in Net::LDAP::SimpleServer. Some ideas are:
 
     #objectclass_req (true|false)
     #user_tree dc=some,dc=subtree,dc=com
-    #user_id_attr uid
-    #user_pw_attr password
 
 Keeping in mind we do NOT want to implement a full blown LDAP server.
+
+=head1 Contributors in CPAN RT
+
+=begin :list
+
+* Ian Puleston <ipuleston@SonicWALL.com>
+
+=end :list
 
 =cut
 
