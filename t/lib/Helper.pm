@@ -45,7 +45,6 @@ my $server_fixed_opts = {
     host     => 'localhost',
 };
 
-my $alarm_wait = 5;
 my $OK         = 'OK';
 my $NOK        = 'NOK ';
 
@@ -56,36 +55,31 @@ sub _eval_params {
     our $pipe = IO::Pipe->new;
 
     run_fork {
+        parent {
+            # parent code
+            $pipe->reader;
+            $result = <$pipe>;
+        }
         child {
             $pipe->writer;
 
             sub quit {
-                print $pipe shift . "\n";
+                print $pipe shift;
                 exit;
             }
 
             alarm 0;
             local $SIG{ALRM} = sub { quit($OK) };
-            alarm $alarm_wait;
+            alarm $default_start_delay;
 
             try {
-                use Net::LDAP::SimpleServer;
-
-                my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
-                $s->run($p);
+                Net::LDAP::SimpleServer->new($server_fixed_opts)->run($p);
             }
             catch {
                 quit($NOK . $@);
             }
         }
     };
-
-    # parent code
-    $pipe->reader;
-
-    $result = <$pipe>;
-    chomp $result;
-
     return $result;
 }
 
@@ -93,26 +87,14 @@ sub server_nok {
     my ( $params, $test_name ) = @_;
     my $res = _eval_params($params);
 
-    #diag( 'res = ', $res);
-    if ( $res eq $OK ) {
-        diag( 'params = ', explain($params) );
-        fail($test_name);
-        return;
-    }
-    pass($test_name);
+    isnt( $res, $OK, $test_name ) || diag($res .': params=' . explain($params));
 }
 
 sub server_ok {
     my ( $params, $test_name ) = @_;
     my $res = _eval_params($params);
 
-    #diag( 'res = ', $res);
-    if ( $res eq $OK ) {
-        pass($test_name);
-        return;
-    }
-    diag( 'params = ', explain($params) );
-    fail( $test_name ? $test_name : $res );
+    is( $res, $OK, $test_name ) || diag($res .': params=' . explain($params));
 }
 
 sub ldap_client {
@@ -131,12 +113,11 @@ sub test_requests {
 
     run_fork {
         parent {
+            # client side
             my $child = shift;
 
             try {
-                # give the server some time to start
                 sleep $start_delay;
-                # run client
                 $requests_sub->();
             }
             finally {
@@ -144,9 +125,8 @@ sub test_requests {
             }
         }
         child {
-            my $s = Net::LDAP::SimpleServer->new($server_fixed_opts);
-            # run server
-            $s->run($server_opts);
+            # server side
+            Net::LDAP::SimpleServer->new($server_fixed_opts)->run($server_opts);
         }
     };
 }
